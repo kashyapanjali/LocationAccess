@@ -19,7 +19,7 @@ exports.signup = (req, res) => {
       if (err) {
         return res.status(500).json({ error: "Error inserting user" });
       }
-
+      res.json(users);
       res.status(201).json({ message: "User registered successfully" });
     });
   });
