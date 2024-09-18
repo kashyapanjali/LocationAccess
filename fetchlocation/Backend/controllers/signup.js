@@ -21,7 +21,3 @@ exports.signup = async (req, res) => {
     res.status(500).json({ error: "Error inserting user" });
   }
 };
-
-exports.test = async (req, res) => {
-  return res.status(200).json({ message: "test successfully" });
-};
