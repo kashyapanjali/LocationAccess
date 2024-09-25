@@ -8,7 +8,6 @@
 }
 
 .login_logo {
-  size: 10px;
   width: 100px;
 }
 
@@ -20,30 +19,29 @@
   padding: 20px;
   width: 300px;
   height: fit-content;
-  max-width: 80%; /* Set max width to prevent stretching */
+  max-width: 80%;
 }
 
 .login_container > h1 {
-  margin-top: 0px;
-  margin-bottom: auto; /* Small margin to reduce space */
   color: red;
 }
 
 .login_container > form > h5 {
-  margin-bottom: 1px;
+  margin-bottom: 5px;
 }
 
 .login_container > form > input {
   height: 20px;
   background-color: white;
   width: 100%;
-  padding: 8px;
+  padding: 10px;
   box-sizing: border-box;
-  margin-bottom: -2px;
+  margin-bottom: 10px;
 }
 
-.login_signInButton {
-  height: 20px;
+.otp_generate,
+.verify_button {
+  height: 30px;
   margin-top: 10px;
   width: 100%;
   background-color: rgb(241, 238, 238);
@@ -52,17 +50,8 @@
   cursor: pointer;
 }
 
-.forgetPass {
-  color: red;
-  margin-top: 0;
-  text-align: center;
-}
-
-.des {
-  margin-top: 0;
-}
 button {
-  height: 20px;
+  height: 30px;
   width: 100%;
   background-color: green;
   color: white;
@@ -73,12 +62,17 @@ button {
 button:hover {
   background-color: darkgreen;
 }
+.home {
+  text-align: center;
+  font-size: 20px;
+  margin-top: 10px;
+}
 
-/* For tablet-sized screens */
+/* Responsive Design for Tablets */
 @media only screen and (max-width: 600px) {
   .login_container {
-    width: 50%; /* Use a percentage width so it's responsive */
-    max-width: 350px; /* Ensure it doesn't get too wide */
+    width: 50%;
+    max-width: 350px;
     padding: 10px;
   }
 
@@ -89,14 +83,14 @@ button:hover {
   }
 }
 
-/* For phone-sized screens */
+/* Responsive Design for Phones */
 @media only screen and (max-width: 350px) {
   .auth {
     padding: 50px;
   }
 
   .login_container {
-    width: 90%; /* Keep it at a reasonable width on smaller screens */
+    width: 90%;
     max-width: 300px;
     padding: 10px;
     border: 0.9px solid red;

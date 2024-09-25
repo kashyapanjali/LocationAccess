@@ -25,12 +25,10 @@ exports.login = async (req, res) => {
 
     //If credentials are correct
 
-    res
-      .status(200)
-      .json({
-        message: "Login successful",
-        user: { username: user.username, email: user.email },
-      });
+    res.status(200).json({
+      message: "Login successful",
+      user: { username: user.username, email: user.email },
+    });
   } catch (err) {
     console.error("Login error:", err); //Log the actual error
 

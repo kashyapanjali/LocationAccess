@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import React, { useState } from "react";
 import "./Auth.css";
 import axios from "axios";
@@ -104,7 +106,9 @@ export default function Auth() {
           </button>
           <p className="forgetPass">Forget Password</p>
         </form>
-
+        <Link className="otpMain" to="/otp">
+          OTP Generate?
+        </Link>
         <p className="des">
           By {isSignUp ? "signing up" : "signing in"}, you agree to our Terms
           and Conditions for accessing location data.
