@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 // const testRoutes = require("./routes/test");
 const cors = require("cors"); // Enable cross-origin requests
+require("dotenv").config();
 
 const app = express();
 
