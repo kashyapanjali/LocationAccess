@@ -12,12 +12,25 @@ exports.sendOtp = async (req, res) => {
   // Save OTP in memory for later verification
   otps.set(email, otp);
 
+  // Automatically delete OTP after 5 minutes (300,000 ms)
+  setTimeout(() => {
+    if (otps.has(email)) {
+      otps.delete(email);
+      console.log(`OTP for ${email} has expired and been removed.`);
+    }
+  }, 300000); // 10 seconds for testing
+
   // Setup nodemailer to send email
   let transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: "smtp.gmail.com",
+    port: 587, // Use port 587 for TLS
+    secure: false, // Use StartTLS
     auth: {
       user: process.env.EMAIL,
       pass: process.env.PASSWORD,
+    },
+    tls: {
+      rejectUnauthorized: false,
     },
   });
 
@@ -40,8 +53,9 @@ exports.sendOtp = async (req, res) => {
 exports.verifyOtp = (req, res) => {
   const { email, otp } = req.body;
   const storedOtp = otps.get(email);
-
   if (storedOtp && storedOtp == otp) {
+    // OTP verified successfully, now delete the OTP from the map
+    otps.delete(email);
     res.status(200).json({ message: "OTP verified successfully" });
   } else {
     res.status(400).json({ message: "Invalid OTP" });
