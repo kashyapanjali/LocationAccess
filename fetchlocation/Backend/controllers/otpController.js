@@ -18,19 +18,19 @@ exports.sendOtp = async (req, res) => {
       otps.delete(email);
       console.log(`OTP for ${email} has expired and been removed.`);
     }
-  }, 300000); // 10 seconds for testing
+  }, 300000); // 5 minutes for actual implementation
 
   // Setup nodemailer to send email
   let transporter = nodemailer.createTransport({
     host: "smtp.gmail.com",
     port: 587, // Use port 587 for TLS
-    secure: false, // Use StartTLS
+    secure: false, // true for 465, false for other ports
     auth: {
       user: process.env.EMAIL,
       pass: process.env.PASSWORD,
     },
     tls: {
-      rejectUnauthorized: false,
+      rejectUnauthorized: false, // Use true in production with valid certs
     },
   });
 
