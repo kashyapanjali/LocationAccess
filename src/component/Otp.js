@@ -16,7 +16,7 @@ function Otp() {
           <h5>Email</h5>
           <input
             type="email"
-            placeholder="Enter your email"
+            placeholder="Enter your email "
             className="email_input"
           />
           <button className="otp_generate">Request OTP</button>
