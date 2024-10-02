@@ -23,29 +23,72 @@ function LiveLocation() {
     }
 
     const watchId = navigator.geolocation.watchPosition(
-      async (position) => {
-        console.log(position);
+      (position) => {
         const newLocation = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
         setLocation(newLocation);
-        console.log(newLocation);
-
-        try {
-          await axios.post("http://localhost:3000/api/location", newLocation);
-          console.log("location sent to server");
-        } catch (error) {
-          console.error("Error sending location to server:", error);
-        }
+        console.log("Updated location:", newLocation);
       },
       (error) => {
         setError(`Error: ${error.message}`);
       }
     );
 
-    return () => navigator.geolocation.clearWatch(watchId);
+    // WebSocket connection
+    const ws = new WebSocket("ws://localhost:3000");
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (
+        message.type === "callFunction" &&
+        message.functionName === "updateLocation"
+      ) {
+        getCurrentLocationAndSend();
+        console.log("call from backend");
+      }
+    };
+
+    return () => {
+      navigator.geolocation.clearWatch(watchId);
+      ws.close();
+    };
   }, []);
+
+  const sendLocationToBackend = async (currentLocation) => {
+    if (!currentLocation) {
+      console.error("No location data available");
+      return;
+    }
+
+    try {
+      await axios.post("http://localhost:3000/api/location", currentLocation);
+      console.log("Location sent to server:", currentLocation);
+    } catch (error) {
+      console.error("Error sending location to server:", error);
+    }
+  };
+
+  const getCurrentLocationAndSend = () => {
+    if (!navigator.geolocation) {
+      setError("Geolocation is not supported by your browser");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const currentLocation = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        };
+        sendLocationToBackend(currentLocation);
+      },
+      (error) => {
+        setError(`Error getting current location: ${error.message}`);
+      }
+    );
+  };
 
   if (error) return <div>Error: {error}</div>;
   if (!location) return <div>Loading location...</div>;
@@ -55,7 +98,10 @@ function LiveLocation() {
       <h2>Live Location</h2>
       <p>Latitude: {location.latitude}</p>
       <p>Longitude: {location.longitude}</p>
-      <div style={{ height: "400px", width: "100%" }}>
+      <button onClick={getCurrentLocationAndSend}>
+        Send Current Location to Backend
+      </button>
+      <div style={{ height: "400px", width: "100%", marginTop: "20px" }}>
         <MapContainer
           center={[location.latitude, location.longitude]}
           zoom={13}
