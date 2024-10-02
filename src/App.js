@@ -1,17 +1,16 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import Otp from "./Otp";
-import Auth from "./Auth";
+import Otp from "./component/Otp";
+import Auth from "./component/Auth";
+import LiveLocation from "./component/LiveLocation";
+
 function App() {
   return (
     <Router>
       <div className="app">
         <Routes>
-          {/* Route for the Otp component */}
-          {/* Route for the Auth component */}
+          <Route path="/" element={<Auth />} />
           <Route path="/otp" element={<Otp />} />
-
-          {/* Route for the Otp component */}
-          <Route path="/home" element={<Auth />} />
+          <Route path="/location" element={<LiveLocation />} />
         </Routes>
       </div>
     </Router>
