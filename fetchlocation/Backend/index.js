@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const authRoutes = require("./routes/auth");
 // const testRoutes = require("./routes/test");
 const cors = require("cors"); // Enable cross-origin requests
+require("dotenv").config();
 
 const app = express();
 
@@ -18,7 +19,7 @@ app.use("/api/auth", authRoutes);
 // app.use("/api/test", testRoutes);
 
 //Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
