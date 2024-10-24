@@ -38,11 +38,16 @@ export default function Auth() {
     } else {
       //Sign in user
       try {
-        await axios.post(`${API_URL}/login`, {
+        const response = await axios.post(`${API_URL}/login`, {
           email,
           password,
         });
         setMessage("Sign-in successful! Welcome back.");
+
+        // Save userId in localStorage to use it when sending location updates
+        localStorage.setItem("userId", response.data.userId);
+
+        // Redirect to location page or dashboard
       } catch (error) {
         setMessage("Invalid email or password. Please try again.");
         console.error("Sign-in error:", error);

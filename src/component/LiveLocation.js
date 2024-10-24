@@ -62,8 +62,18 @@ function LiveLocation() {
       return;
     }
 
+    const userId = localStorage.getItem("userId"); // Retrieve the logged-in user ID from localStorage or other auth mechanism
+
+    if (!userId) {
+      console.error("User ID not found");
+      return;
+    }
+
     try {
-      await axios.post("http://localhost:3000/api/location", currentLocation);
+      await axios.post("http://localhost:3000/api/location", {
+        ...currentLocation,
+        userid: userId,
+      });
       console.log("Location sent to server:", currentLocation);
     } catch (error) {
       console.error("Error sending location to server:", error);
