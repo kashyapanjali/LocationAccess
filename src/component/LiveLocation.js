@@ -15,8 +15,16 @@ L.Icon.Default.mergeOptions({
 function LiveLocation() {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
+  // State for button loading state
+  const [isSending, setIsSending] = useState(false);
+  // To track if update was sent
+  const [hasSent, setHasSent] = useState(false);
+  // Get user ID from localStorage
+  const userId = localStorage.getItem("userId");
 
   useEffect(() => {
+    localStorage.setItem("userId", "1"); // Replace "test-user-id" with an actual test ID
+
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
       return;
@@ -29,7 +37,7 @@ function LiveLocation() {
           longitude: position.coords.longitude,
         };
         setLocation(newLocation);
-        console.log("Updated location:", newLocation);
+        // sendLocationToBackend(newLocation);
       },
       (error) => {
         setError(`Error: ${error.message}`);
@@ -45,11 +53,12 @@ function LiveLocation() {
         message.type === "callFunction" &&
         message.functionName === "updateLocation"
       ) {
-        getCurrentLocationAndSend();
-        console.log("call from backend");
+        getCurrentLocationAndSend(); // Fetch and send the current location
+        console.log("Backend requested location update");
       }
     };
 
+    // Cleanup function
     return () => {
       navigator.geolocation.clearWatch(watchId);
       ws.close();
@@ -57,19 +66,18 @@ function LiveLocation() {
   }, []);
 
   const sendLocationToBackend = async (currentLocation) => {
-    if (!currentLocation) {
-      console.error("No location data available");
+    if (!currentLocation || !userId) {
+      console.error("Missing location data or User ID");
       return;
     }
-
-    const userId = localStorage.getItem("userId"); // Retrieve the logged-in user ID from localStorage or other auth mechanism
-
-    if (!userId) {
-      console.error("User ID not found");
+    // Check if a previous update was sent
+    if (hasSent) {
+      console.log("Location update already sent. Waiting for a new click.");
       return;
     }
 
     try {
+      setIsSending(true); // Start loading state
       await axios.post("http://localhost:3000/api/location", {
         ...currentLocation,
         userid: userId,
@@ -77,6 +85,8 @@ function LiveLocation() {
       console.log("Location sent to server:", currentLocation);
     } catch (error) {
       console.error("Error sending location to server:", error);
+    } finally {
+      setIsSending(false); // End loading state
     }
   };
 
@@ -100,6 +110,12 @@ function LiveLocation() {
     );
   };
 
+  // Reset hasSent state when the button is clicked again
+  const handleButtonClick = () => {
+    setHasSent(false); // Reset state to allow a new send
+    getCurrentLocationAndSend(); // Get the current location and send it
+  };
+
   if (error) return <div>Error: {error}</div>;
   if (!location) return <div>Loading location...</div>;
 
@@ -108,8 +124,8 @@ function LiveLocation() {
       <h2>Live Location</h2>
       <p>Latitude: {location.latitude}</p>
       <p>Longitude: {location.longitude}</p>
-      <button onClick={getCurrentLocationAndSend}>
-        Send Current Location to Backend
+      <button onClick={handleButtonClick} disabled={isSending}>
+        {isSending ? "Sending..." : "Send Current Location to Backend"}
       </button>
       <div style={{ height: "400px", width: "100%", marginTop: "20px" }}>
         <MapContainer

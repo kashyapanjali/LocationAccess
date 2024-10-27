@@ -10,8 +10,6 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
-  // const [registeredUsers, setRegisteredUsers] = useState([]);
-  // State to store signed-up users
 
   // Backend URL (replace with your actual server URL)
   const API_URL = "http://localhost:5000/api/auth";
