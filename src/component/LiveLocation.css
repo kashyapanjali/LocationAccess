@@ -1,0 +1,156 @@
+/* LiveLocation.css */
+
+/* General styles */
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f8f9fa; /* Light background for contrast */
+  margin: 0;
+  padding: 0;
+}
+
+/* Container for the LiveLocation component */
+.live-location-container {
+  max-width: 800px; /* Limit the width of the container */
+  margin: 20px auto; /* Center the container */
+  padding: 20px; /* Add padding */
+  background-color: #ffffff; /* White background for the card */
+  border-radius: 8px; /* Rounded corners */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+}
+
+/* Heading styles */
+.live-location-header {
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Center items vertically */
+  justify-content: center; /* Center items horizontally */
+  color: #333; /* Dark text color */
+}
+
+.live-location-header img {
+  margin-right: 10px; /* Space between logo and text */
+  height: 30px; /* Decrease height as needed */
+  width: 30px; /* Decrease width as needed */
+}
+
+/* Paragraph styles */
+.live-location-container p {
+  font-size: 1.1em; /* Slightly larger font size */
+  color: #555; /* Medium gray text color */
+}
+
+/* Button styles */
+.live-location-button {
+  background-color: #007bff; /* Bootstrap primary color */
+  color: white; /* White text */
+  padding: 10px 15px; /* Padding for buttons */
+  border: none; /* Remove border */
+  border-radius: 5px; /* Rounded corners */
+  cursor: pointer; /* Pointer cursor on hover */
+  transition: background-color 0.3s; /* Smooth transition */
+  width: 100%; /* Set width to 100% for centering */
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center horizontally */
+  align-items: center; /* Center vertically */
+  height: 30px; /* Set a fixed height for buttons */
+}
+
+/* Centering container for the button */
+.button-center {
+  display: flex; /* Use flexbox for centering */
+  justify-content: center; /* Center button horizontally */
+  margin-bottom: 20px; /* Space below the button */
+}
+
+.live-location-button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
+
+/* Flex container for buttons */
+.button-container {
+  display: flex; /* Use flexbox for button layout */
+  justify-content: space-around; /* Space buttons evenly */
+  margin-bottom: 20px; /* Space below buttons */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  gap: 20px; /* Adjust gap between button containers */
+}
+
+/* Token input styles for button 1*/
+.button-container1 {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+
+.token-input-container1 {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  justify-content: center;
+  margin-left: 80px;
+}
+
+.token-input-container1 input {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+/* Copy button styles */
+.copy-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+  width: 50px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+.copy-button:hover {
+  background-color: #5a6268;
+}
+/* Token input styles  for button 2*/
+.button-container2 {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  text-align: center;
+}
+
+.token-input-container2 {
+  display: flex;
+  align-items: center;
+  width: 50%;
+  justify-content: center;
+  margin-left: 80px;
+}
+.token-input-container2 input {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 8px;
+}
+
+.paste-button {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-bottom: 10px;
+  width: 50px;
+  margin-left: 5px;
+  margin-top: 5px;
+}
+
+/* Map container styles */
+.map-container {
+  height: 400px; /* Fixed height for the map */
+  margin-top: 20px; /* Space above the map */
+  border-radius: 8px; /* Rounded corners */
+  overflow: hidden; /* Hide overflow */
+}
