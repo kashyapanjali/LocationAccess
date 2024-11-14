@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 import React, { useState } from "react";
 import "./Auth.css";
@@ -10,18 +10,31 @@ export default function Auth() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+  const navigate = useNavigate();
 
   // Backend URL (replace with your actual server URL)
-  const API_URL = "http://localhost:5000/api/auth";
+  const API_URL = "http://localhost:5000/api";
 
-  //for submit when user signin and up as well
+  // Email validation function
+  const isValidEmail = (email) => {
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return regex.test(email);
+  };
+
+  // For submit when user signs in and up as well
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate email before proceeding
+    if (!isValidEmail(email)) {
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+
     if (isSignUp) {
-      //sign up user here
+      // Sign up user here
       try {
-        await axios.post(`${API_URL}/signup`, {
+        const response = await axios.post(`${API_URL}/register`, {
           username,
           email,
           password,
@@ -31,10 +44,13 @@ export default function Auth() {
         setIsSignUp(false);
       } catch (error) {
         setMessage("Error signing up. Please try again.");
-        console.error("Sign-up error:", error);
+        console.error(
+          "Sign-up error:",
+          error.response ? error.response.data : error.message
+        );
       }
     } else {
-      //Sign in user
+      // Sign in user
       try {
         const response = await axios.post(`${API_URL}/login`, {
           email,
@@ -42,10 +58,11 @@ export default function Auth() {
         });
         setMessage("Sign-in successful! Welcome back.");
 
-        // Save userId in localStorage to use it when sending location updates
+        // Save actual userId in localStorage to use it when sending location updates
         localStorage.setItem("userId", response.data.userId);
 
-        // Redirect to location page or dashboard
+        // Redirect to location page after successful login
+        navigate("/location");
       } catch (error) {
         setMessage("Invalid email or password. Please try again.");
         console.error("Sign-in error:", error);
@@ -91,7 +108,7 @@ export default function Auth() {
             type="email"
             placeholder="Enter your email"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} //update email
+            onChange={(e) => setEmail(e.target.value)} // Update email
             required
           />
 

@@ -71,8 +71,6 @@ function LiveLocation() {
   }, [sendLocationToBackend]); // Added sendLocationToBackend to dependencies
 
   useEffect(() => {
-    localStorage.setItem("userId", "1"); // Replace "test-user-id" with an actual test ID
-
     if (!navigator.geolocation) {
       setError("Geolocation is not supported by your browser");
       return;
