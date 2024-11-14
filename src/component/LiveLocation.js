@@ -269,6 +269,20 @@ function LiveLocation() {
               {accessedLocation ? "Accessed location" : "Your current location"}
             </Popup>
           </Marker>
+          {/* Add a marker for accessed location with a custom icon */}
+          {accessedLocation && (
+            <Marker
+              position={[accessedLocation.latitude, accessedLocation.longitude]}
+              icon={L.icon({
+                iconUrl:
+                  "https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png",
+                iconSize: [30, 30],
+                iconAnchor: [15, 30],
+              })}
+            >
+              <Popup>Accessed Location</Popup>
+            </Marker>
+          )}
         </MapContainer>
       </div>
     </div>
