@@ -154,3 +154,12 @@ body {
   border-radius: 8px; /* Rounded corners */
   overflow: hidden; /* Hide overflow */
 }
+
+/* Unique text styling for user attraction */
+.attraction-text {
+  font-size: 1.2em; /* Slightly larger font size */
+  color: #007bff; /* Bootstrap primary color for emphasis */
+  text-align: center; /* Center the text */
+  margin-bottom: 10px; /* Space below the text */
+  font-weight: bold; /* Make the text bold */
+}

@@ -177,14 +177,16 @@ function LiveLocation() {
 
       <p>Yours Latitude: {location.latitude}</p>
       <p>Yours Longitude: {location.longitude}</p>
-      <button
-        onClick={handleButtonClick}
-        disabled={isSending}
-        className="live-location-button"
-        style={{ marginBottom: "10px" }}
-      >
-        {isSending ? "Sending..." : "Send Current Location to Backend"}
-      </button>
+      <div className="button-center">
+        <button
+          onClick={handleButtonClick}
+          disabled={isSending}
+          className="live-location-button"
+          style={{ marginBottom: "10px" }}
+        >
+          {isSending ? "Sending..." : "Send Current Location to Backend"}
+        </button>
+      </div>
       <div className="button-container">
         {/* generate token to give others for showing your location */}
         <div className="button-container1">
