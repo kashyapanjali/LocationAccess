@@ -197,62 +197,52 @@ function LiveLocation() {
         </button>
       </div>
       <div className="button-container">
-        {/* generate token to give others for showing your location */}
-        <div className="button-container1">
+        {/* Generate token button and input */}
+        <div className="button-group">
           <button onClick={generateToken} className="live-location-button">
             Generate Token
           </button>
-          <div className="mt-4">
-            <label htmlFor="token" className="text">
-              Generated Token
-            </label>
-            <div className="token-input-container1">
-              <input
-                id="token"
-                value={token}
-                readOnly
-                placeholder="Token will appear here"
-                className="border rounded p-2 w-full"
-              />
-              <button
-                onClick={copyTokenToClipboard}
-                title="Copy to clipboard"
-                className="copy-button"
-              >
-                Copy
-              </button>
-            </div>
+          <div className="token-input-container">
+            <input
+              id="token"
+              value={token}
+              readOnly
+              placeholder="Token will appear here"
+              className="input-field"
+            />
+            <button
+              onClick={copyTokenToClipboard}
+              title="Copy to clipboard"
+              className="action-button"
+            >
+              Copy
+            </button>
           </div>
         </div>
 
-        {/* Access live location through token button 2 */}
-        <div className="button-container2">
+        {/* Access token button and input */}
+        <div className="button-group">
           <button
             onClick={accessTokenLocation}
             className="live-location-button"
           >
             Access Token
           </button>
-          <div className="mt-4">
-            <label htmlFor="access-token" className="text">
-              Show live location
-            </label>
-            <div className="token-input-container2">
-              <input
-                id="access-token"
-                value={accessToken}
-                onChange={(e) => setAccessToken(e.target.value)}
-                placeholder="Paste here"
-                className="border rounded p-2 w-full"
-              />
-              <button
-                title="Paste from clipboard"
-                className="paste-button"
-                onClick={pasteTokenFromClipboard} // Call the paste function
-              >
-                Paste
-              </button>
-            </div>
+          <div className="token-input-container">
+            <input
+              id="access-token"
+              value={accessToken}
+              onChange={(e) => setAccessToken(e.target.value)}
+              placeholder="Paste here"
+              className="input-field"
+            />
+            <button
+              title="Paste from clipboard"
+              className="action-button"
+              onClick={pasteTokenFromClipboard}
+            >
+              Paste
+            </button>
           </div>
         </div>
       </div>
