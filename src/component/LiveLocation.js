@@ -48,7 +48,7 @@ function LiveLocation() {
       }
     },
     [hasSent, userId]
-  ); // Added hasSent and userId to dependencies
+  );
 
   const getCurrentLocationAndSend = useCallback(() => {
     if (!navigator.geolocation) {
@@ -68,7 +68,7 @@ function LiveLocation() {
         setError(`Error getting current location: ${error.message}`);
       }
     );
-  }, [sendLocationToBackend]); // Added sendLocationToBackend to dependencies
+  }, [sendLocationToBackend]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -108,7 +108,7 @@ function LiveLocation() {
       navigator.geolocation.clearWatch(watchId);
       ws.close();
     };
-  }, [getCurrentLocationAndSend]); // Added getCurrentLocationAndSend to dependencies
+  }, [getCurrentLocationAndSend]);
 
   // Reset hasSent state when the button is clicked again
   const handleButtonClick = () => {
@@ -150,6 +150,17 @@ function LiveLocation() {
 
     // Set the accessed location based on the token
     setAccessedLocation({ latitude, longitude });
+  };
+
+  // New function to handle pasting the token
+  const pasteTokenFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText(); // Read text from clipboard
+      setAccessToken(text); // Set the accessToken state with the pasted text
+    } catch (error) {
+      setError("Failed to paste token from clipboard.");
+      console.error("Paste error:", error);
+    }
   };
 
   if (error) return <div className="text-red-500">Error: {error}</div>;
@@ -234,7 +245,11 @@ function LiveLocation() {
                 placeholder="Paste here"
                 className="border rounded p-2 w-full"
               />
-              <button title="Paste to clipboard" className="paste-button">
+              <button
+                title="Paste from clipboard"
+                className="paste-button"
+                onClick={pasteTokenFromClipboard} // Call the paste function
+              >
                 Paste
               </button>
             </div>
