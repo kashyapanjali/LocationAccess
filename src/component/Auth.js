@@ -124,7 +124,9 @@ export default function Auth() {
           <button type="submit" className="login_signInButton">
             {isSignUp ? "Sign Up" : "Sign In"}
           </button>
-          <p className="forgetPass">Forget Password</p>
+          <p className="forgetPass">
+            <Link to="/forget-password">Forgot Password?</Link>
+          </p>
         </form>
         <Link className="otpMain" to="/otp">
           OTP Generate?

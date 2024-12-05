@@ -145,10 +145,10 @@ function LiveLocation() {
       return;
     }
 
+    getCurrentLocationAndSend(); // Fetch and send the current location
+
     const latitude = parseFloat(tokenParts[1]);
     const longitude = parseFloat(tokenParts[2]);
-
-    // Set the accessed location based on the token
     setAccessedLocation({ latitude, longitude });
   };
 
