@@ -125,11 +125,13 @@ export default function Auth() {
             {isSignUp ? "Sign Up" : "Sign In"}
           </button>
           <p className="forgetPass">
-            <Link to="/forget-password">Forgot Password?</Link>
+            <Link className="linkpass" to="/forget-password">
+              Forget Password
+            </Link>
           </p>
         </form>
         <Link className="otpMain" to="/otp">
-          OTP Generate?
+          OTP Generate
         </Link>
         <p className="des">
           By {isSignUp ? "signing up" : "signing in"}, you agree to our Terms

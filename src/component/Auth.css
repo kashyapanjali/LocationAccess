@@ -53,9 +53,16 @@
 }
 
 .forgetPass {
-  color: red;
   margin-top: 0;
   text-align: center;
+}
+
+.linkpass {
+  text-decoration: none !important;
+}
+
+.otpMain {
+  text-decoration: none;
 }
 
 .des {

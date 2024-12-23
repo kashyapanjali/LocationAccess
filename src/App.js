@@ -3,6 +3,7 @@ import Otp from "./component/Otp";
 import Auth from "./component/Auth";
 import LiveLocation from "./component/LiveLocation";
 import ForgetPassword from "./component/ForgetPassword";
+import ResetPassword from "./component/ResetPassword";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/otp" element={<Otp />} />
           <Route path="/location" element={<LiveLocation />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>

@@ -66,6 +66,7 @@ button:hover {
   text-align: center;
   font-size: 20px;
   margin-top: 10px;
+  text-decoration: none;
 }
 
 /* Responsive Design for Tablets */

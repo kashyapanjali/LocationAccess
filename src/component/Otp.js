@@ -100,7 +100,7 @@ function Otp() {
         {message && <p className="message">{message}</p>}{" "}
         {/* Display messages */}
         <Link className="home" to="/">
-          SignInUp?
+          SignInUp
         </Link>
       </div>
     </div>
