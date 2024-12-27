@@ -21,6 +21,14 @@ export default function Auth() {
     return regex.test(email);
   };
 
+  // Password validation function
+  const isValidPassword = (password) => {
+    // Check if password has at least 6 characters, one lowercase letter, one uppercase letter, one digit, and one special character
+    const regex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    return regex.test(password);
+  };
+
   // For submit when user signs in and up as well
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,6 +36,14 @@ export default function Auth() {
     // Validate email before proceeding
     if (!isValidEmail(email)) {
       setMessage("Please enter a valid email address.");
+      return;
+    }
+
+    // Validate password
+    if (!isValidPassword(password)) {
+      setMessage(
+        "Password must be at least 6 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character."
+      );
       return;
     }
 

@@ -13,10 +13,16 @@ export default function ResetPassword() {
   // Backend URL (replace with your actual server URL)
   const API_URL = "http://localhost:5000/api";
 
+  // Password strength regex
+  // Updated password strength regex without unnecessary escapes
+  const passwordStrengthRegex =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+={}|:";'<>?,./])[A-Za-z\d!@#$%^&*()_+={}|:";'<>?,./]{6,}$/;
+
   // Handle setting a new password
   const handleResetPassword = async (e) => {
     e.preventDefault();
 
+    // Password validation
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");
       return;
@@ -24,6 +30,13 @@ export default function ResetPassword() {
 
     if (password.length < 6) {
       setMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
+    if (!passwordStrengthRegex.test(password)) {
+      setMessage(
+        "Password must contain at least one letter, one number, and one special character."
+      );
       return;
     }
 
