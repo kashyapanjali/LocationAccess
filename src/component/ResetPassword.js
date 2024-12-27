@@ -1,21 +1,17 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation, Link, useParams } from "react-router-dom";
-import "./ForgetPassword.css"; // Reuse the same CSS file for consistent styling
+import { useNavigate, useParams, Link } from "react-router-dom";
+import "./ForgetPassword.css";
 import axios from "axios";
 
 export default function ResetPassword() {
+  const { token } = useParams(); // Extract token from URL params
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
-  const { id, token } = useParams();
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Backend URL (replace with your actual server URL)
   const API_URL = "http://localhost:5000/api";
-
-  // Extract reset token from query parameters
-  const resetToken = new URLSearchParams(location.search).get("token");
 
   // Handle setting a new password
   const handleResetPassword = async (e) => {
@@ -26,15 +22,26 @@ export default function ResetPassword() {
       return;
     }
 
+    if (password.length < 6) {
+      setMessage("Password must be at least 6 characters long.");
+      return;
+    }
+
     try {
-      await axios.post(`${API_URL}/reset-password/${id}/${token}`, {
-        resetToken,
+      // Make POST request to reset the password
+      const response = await axios.post(`${API_URL}/reset-password/${token}`, {
         password,
       });
-      setMessage("Password has been successfully reset!");
-      navigate("/"); // Redirect to login page after successful reset
+
+      setMessage(
+        response.data.message || "Password has been successfully reset!"
+      );
+      setTimeout(() => navigate("/"), 2000); // Redirect to login page after success
     } catch (error) {
-      setMessage("Error resetting password. Please try again.");
+      setMessage(
+        error.response?.data?.message ||
+          "Error resetting password. Please try again."
+      );
       console.error("Reset password error:", error);
     }
   };

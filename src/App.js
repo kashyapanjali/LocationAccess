@@ -14,7 +14,7 @@ function App() {
           <Route path="/otp" element={<Otp />} />
           <Route path="/location" element={<LiveLocation />} />
           <Route path="/forget-password" element={<ForgetPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
         </Routes>
       </div>
     </Router>
