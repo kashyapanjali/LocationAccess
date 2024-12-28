@@ -167,126 +167,138 @@ function LiveLocation() {
   if (!location) return <div>Loading location...</div>;
 
   return (
-    <div className="live-location-container">
-      <h2 className="live-location-header">
-        <img
-          src="https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png"
-          alt="Location icon"
-        />
-        Live Location
-      </h2>
-
-      {/* Display accessed location if available */}
-      {accessedLocation && (
-        <div>
-          <p>Accessed Location Latitude: {accessedLocation.latitude}</p>
-          <p>Accessed Location Longitude: {accessedLocation.longitude}</p>
-        </div>
-      )}
-
-      <p>Yours Latitude: {location.latitude}</p>
-      <p>Yours Longitude: {location.longitude}</p>
-      <div className="button-center">
-        <button
-          onClick={handleButtonClick}
-          disabled={isSending}
-          className="live-location-button"
-          style={{ marginBottom: "10px" }}
-        >
-          {isSending ? "Sending..." : "Send Current Location to Backend"}
-        </button>
-      </div>
-      <div className="button-container">
-        {/* Generate token button and input */}
-        <div className="button-group">
-          <button onClick={generateToken} className="live-location-button">
-            Generate Token
-          </button>
-          <div className="token-input-container">
-            <input
-              id="token"
-              value={token}
-              readOnly
-              placeholder="Token will appear here"
-              className="input-field"
-            />
-            <button
-              onClick={copyTokenToClipboard}
-              title="Copy to clipboard"
-              className="action-button"
-            >
-              Copy
-            </button>
-          </div>
-        </div>
-
-        {/* Access token button and input */}
-        <div className="button-group">
-          <button
-            onClick={accessTokenLocation}
-            className="live-location-button"
-          >
-            Access Token
-          </button>
-          <div className="token-input-container">
-            <input
-              id="access-token"
-              value={accessToken}
-              onChange={(e) => setAccessToken(e.target.value)}
-              placeholder="Paste here"
-              className="input-field"
-            />
-            <button
-              title="Paste from clipboard"
-              className="action-button"
-              onClick={pasteTokenFromClipboard}
-            >
-              Paste
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="map-container">
-        <MapContainer
-          center={
-            accessedLocation
-              ? [accessedLocation.latitude, accessedLocation.longitude]
-              : [location.latitude, location.longitude]
-          }
-          zoom={13}
-          style={{ height: "100%", width: "100%" }}
-        >
-          <TileLayer
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    <div className="main">
+      <div className="navbar-body">
+        {/* username identify from the authentication */}
+        <p className="usersname">username?</p>
+        <h2 className="live-location-header">
+          <img
+            src="https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png"
+            alt="Location icon"
           />
-          <Marker
-            position={
+          Live Location
+        </h2>
+        {/* logout button */}
+        <p className="logoutbutton">logout</p>
+      </div>
+      <div className="live-location-container">
+        {/* Display accessed location if available */}
+        {accessedLocation && (
+          <div>
+            <p>Accessed Location Latitude: {accessedLocation.latitude}</p>
+            <p>Accessed Location Longitude: {accessedLocation.longitude}</p>
+          </div>
+        )}
+
+        <p>Yours Latitude: {location.latitude}</p>
+        <p>Yours Longitude: {location.longitude}</p>
+        <div className="button-center">
+          <button
+            onClick={handleButtonClick}
+            disabled={isSending}
+            className="live-location-button"
+            style={{ marginBottom: "10px" }}
+          >
+            {isSending ? "Sending..." : "Send Current Location to Backend"}
+          </button>
+        </div>
+        <div className="button-container">
+          {/* Generate token button and input */}
+          <div className="button-group">
+            <button onClick={generateToken} className="live-location-button">
+              Generate Token
+            </button>
+            <div className="token-input-container">
+              <input
+                id="token"
+                value={token}
+                readOnly
+                placeholder="Token will appear here"
+                className="input-field"
+              />
+              <button
+                onClick={copyTokenToClipboard}
+                title="Copy to clipboard"
+                className="action-button"
+              >
+                Copy
+              </button>
+            </div>
+          </div>
+
+          {/* Access token button and input */}
+          <div className="button-group">
+            <button
+              onClick={accessTokenLocation}
+              className="live-location-button"
+            >
+              Access Token
+            </button>
+            <div className="token-input-container">
+              <input
+                id="access-token"
+                value={accessToken}
+                onChange={(e) => setAccessToken(e.target.value)}
+                placeholder="Paste here"
+                className="input-field"
+              />
+              <button
+                title="Paste from clipboard"
+                className="action-button"
+                onClick={pasteTokenFromClipboard}
+              >
+                Paste
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="map-container">
+          <MapContainer
+            center={
               accessedLocation
                 ? [accessedLocation.latitude, accessedLocation.longitude]
                 : [location.latitude, location.longitude]
             }
+            zoom={13}
+            style={{ height: "100%", width: "100%" }}
           >
-            <Popup>
-              {accessedLocation ? "Accessed location" : "Your current location"}
-            </Popup>
-          </Marker>
-          {/* Add a marker for accessed location with a custom icon */}
-          {accessedLocation && (
+            <TileLayer
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            />
             <Marker
-              position={[accessedLocation.latitude, accessedLocation.longitude]}
-              icon={L.icon({
-                iconUrl:
-                  "https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png",
-                iconSize: [30, 30],
-                iconAnchor: [15, 30],
-              })}
+              position={
+                accessedLocation
+                  ? [accessedLocation.latitude, accessedLocation.longitude]
+                  : [location.latitude, location.longitude]
+              }
             >
-              <Popup>Accessed Location</Popup>
+              <Popup>
+                {accessedLocation
+                  ? "Accessed location"
+                  : "Your current location"}
+              </Popup>
             </Marker>
-          )}
-        </MapContainer>
+            {/* Add a marker for accessed location with a custom icon */}
+            {accessedLocation && (
+              <Marker
+                position={[
+                  accessedLocation.latitude,
+                  accessedLocation.longitude,
+                ]}
+                icon={L.icon({
+                  iconUrl:
+                    "https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png",
+                  iconSize: [30, 30],
+                  iconAnchor: [15, 30],
+                })}
+              >
+                <Popup>Accessed Location</Popup>
+              </Marker>
+            )}
+          </MapContainer>
+        </div>
       </div>
     </div>
   );
