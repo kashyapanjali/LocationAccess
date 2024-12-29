@@ -179,11 +179,7 @@ function LiveLocation() {
           Live Location
         </h2>
         {/* Logout button */}
-        <p
-          className="logoutbutton"
-          // onClick={handleLogout}
-          style={{ cursor: "pointer", color: "red" }}
-        >
+        <p className="logoutbutton" style={{ cursor: "pointer", color: "red" }}>
           Logout
         </p>
       </div>
