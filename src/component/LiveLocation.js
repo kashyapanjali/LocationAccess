@@ -22,6 +22,7 @@ function LiveLocation() {
   const [accessToken, setAccessToken] = useState("");
   const [accessedLocation, setAccessedLocation] = useState(null);
   const userId = localStorage.getItem("userId");
+  const [username, setUsername] = useState("");
 
   const sendLocationToBackend = useCallback(
     async (currentLocation) => {
@@ -163,6 +164,14 @@ function LiveLocation() {
     }
   };
 
+  useEffect(() => {
+    // Retrieve user data from localStorage
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setUsername(user.username);
+    }
+  }, []);
+
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!location) return <div>Loading location...</div>;
 
@@ -170,7 +179,7 @@ function LiveLocation() {
     <div className="main">
       <div className="navbar-body">
         {/* Display username */}
-        <p className="usersname">username Welcome</p>
+        <p className="usersname">Welcome,{username}!</p>
         <h2 className="live-location-header">
           <img
             src="https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png"

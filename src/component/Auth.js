@@ -75,6 +75,7 @@ export default function Auth() {
 
         // Save actual userId in localStorage to use it when sending location updates
         localStorage.setItem("userId", response.data.userId);
+
         // Redirect to location page after successful login
         navigate("/location");
       } catch (error) {
