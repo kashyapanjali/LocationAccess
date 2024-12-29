@@ -169,8 +169,10 @@ function LiveLocation() {
   return (
     <div className="main">
       <div className="navbar-body">
-        {/* username identify from the authentication */}
-        <p className="usersname">username?</p>
+        {/* Display username */}
+        <p className="usersname">
+          {username ? `Welcome, ${username}` : "User"}
+        </p>
         <h2 className="live-location-header">
           <img
             src="https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png"
@@ -178,8 +180,14 @@ function LiveLocation() {
           />
           Live Location
         </h2>
-        {/* logout button */}
-        <p className="logoutbutton">logout</p>
+        {/* Logout button */}
+        <p
+          className="logoutbutton"
+          onClick={handleLogout}
+          style={{ cursor: "pointer", color: "red" }}
+        >
+          Logout
+        </p>
       </div>
       <div className="live-location-container">
         {/* Display accessed location if available */}

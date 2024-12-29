@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-
 import React, { useState } from "react";
 import "./Auth.css";
 import axios from "axios";
@@ -76,7 +75,6 @@ export default function Auth() {
 
         // Save actual userId in localStorage to use it when sending location updates
         localStorage.setItem("userId", response.data.userId);
-
         // Redirect to location page after successful login
         navigate("/location");
       } catch (error) {
