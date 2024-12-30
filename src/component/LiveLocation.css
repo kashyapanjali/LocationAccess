@@ -8,6 +8,10 @@ body {
 }
 
 .navbar-body {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
   height: 80px;
   background: linear-gradient(135deg, #00796b, #004d40);
   display: flex;
@@ -15,6 +19,7 @@ body {
   align-items: center;
   padding-left: 50px;
   padding-right: 50px;
+  z-index: 1000;
 }
 
 /* Container for the LiveLocation component */
@@ -56,6 +61,15 @@ body {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+  .live-location-container {
+    max-width: 500px;
+    margin: 10px auto;
+    padding: 8px;
+    margin-top: 15px;
+    background-color: #ffffff;
+    border-radius: 6px;
+  }
+
   .live-location-header {
     font-size: 1.5rem; /* Adjust font size for tablets */
     letter-spacing: 1px;
@@ -69,6 +83,15 @@ body {
 }
 
 @media (max-width: 480px) {
+  .live-location-container {
+    max-width: 300px;
+    margin: 5px auto;
+    margin-top: 18px;
+    padding: 6px;
+    background-color: #ffffff;
+    border-radius: 4px;
+  }
+
   .live-location-header {
     font-size: 1rem; /* Smaller font size for phones */
     letter-spacing: 1px;
@@ -274,4 +297,9 @@ body {
   text-align: center;
   margin-bottom: 10px;
   font-weight: bold;
+}
+
+/* Add padding to the body or main content to prevent overlap */
+.main {
+  padding-top: 80px; /* Adjust this value to match the height of the navbar */
 }
