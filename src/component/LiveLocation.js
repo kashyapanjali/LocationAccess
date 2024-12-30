@@ -18,22 +18,21 @@ function LiveLocation() {
   const [location, setLocation] = useState(null);
   const [error, setError] = useState(null);
   const [isSending, setIsSending] = useState(false);
-  const [hasSent, setHasSent] = useState(false);
   const [token, setToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [accessedLocation, setAccessedLocation] = useState(null);
-  const [username, setUsername] = useState(""); // Initialize username state
+  const [username, setUsername] = useState("");
   const userId = localStorage.getItem("userId");
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   // Retrieve username from localStorage
   useEffect(() => {
     const storedUsername = localStorage.getItem("username");
     if (storedUsername) {
-      setUsername(storedUsername); // Set username if it exists
-      console.log("Username retrieved from localStorage:", storedUsername); // Debugging log
+      setUsername(storedUsername);
+      console.log("Username retrieved from localStorage:", storedUsername);
     } else {
-      console.log("No username found in localStorage."); // Debugging log
+      console.log("No username found in localStorage.");
     }
   }, []);
 
@@ -43,12 +42,8 @@ function LiveLocation() {
         console.error("Missing location data or User ID");
         return;
       }
-      if (hasSent) {
-        console.log("Location update already sent. Waiting for a new click.");
-        return;
-      }
       try {
-        setIsSending(true); // Start loading state
+        setIsSending(true);
         await axios.post("http://localhost:5000/api/location", {
           ...currentLocation,
           userid: userId,
@@ -57,30 +52,11 @@ function LiveLocation() {
       } catch (error) {
         console.error("Error sending location to server:", error);
       } finally {
-        setIsSending(false); // End loading state
+        setIsSending(false);
       }
     },
-    [hasSent, userId]
+    [userId]
   );
-
-  const getCurrentLocationAndSend = useCallback(() => {
-    if (!navigator.geolocation) {
-      setError("Geolocation is not supported by your browser");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const currentLocation = {
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        };
-        sendLocationToBackend(currentLocation);
-      },
-      (error) => {
-        setError(`Error getting current location: ${error.message}`);
-      }
-    );
-  }, [sendLocationToBackend]);
 
   useEffect(() => {
     if (!navigator.geolocation) {
@@ -109,7 +85,6 @@ function LiveLocation() {
         message.type === "callFunction" &&
         message.functionName === "updateLocation"
       ) {
-        getCurrentLocationAndSend(); // Fetch and send the current location
         console.log("Backend requested location update");
       }
     };
@@ -119,25 +94,21 @@ function LiveLocation() {
       navigator.geolocation.clearWatch(watchId);
       ws.close();
     };
-  }, [getCurrentLocationAndSend]);
+  }, []);
 
-  // Reset hasSent state when the button is clicked again
-  const handleButtonClick = () => {
-    setHasSent(false); // Reset state to allow a new send
-    getCurrentLocationAndSend(); // Get the current location and send it
-  };
-
-  const generateToken = () => {
+  const generateToken = async () => {
     if (!location) {
       setError("Please allow location access to generate a token");
       return;
     }
     const randomToken = Math.random().toString(36).substring(2, 15);
-    setToken(
-      `${randomToken}-${location.latitude.toFixed(
-        4
-      )}-${location.longitude.toFixed(4)}`
-    );
+    const newToken = `${randomToken}-${location.latitude.toFixed(
+      4
+    )}-${location.longitude.toFixed(4)}`;
+    setToken(newToken);
+
+    // Send location to backend
+    await sendLocationToBackend(location);
   };
 
   const copyTokenToClipboard = () => {
@@ -154,29 +125,25 @@ function LiveLocation() {
       setError("Invalid token format");
       return;
     }
-    getCurrentLocationAndSend(); // Fetch and send the current location
     const latitude = parseFloat(tokenParts[1]);
     const longitude = parseFloat(tokenParts[2]);
     setAccessedLocation({ latitude, longitude });
   };
 
-  // New function to handle pasting the token
   const pasteTokenFromClipboard = async () => {
     try {
-      const text = await navigator.clipboard.readText(); // Read text from clipboard
-      setAccessToken(text); // Set the accessToken state with the pasted text
+      const text = await navigator.clipboard.readText();
+      setAccessToken(text);
     } catch (error) {
       setError("Failed to paste token from clipboard.");
       console.error("Paste error:", error);
     }
   };
 
-  // Logout function
   const handleLogout = () => {
-    localStorage.removeItem("userId"); // Clear userId
-    localStorage.removeItem("username"); // Clear username
-    console.log("users logout:"); // Debugging log
-    navigate("/"); // Redirect to login page
+    localStorage.removeItem("userId");
+    localStorage.removeItem("username");
+    navigate("/");
   };
 
   if (error) return <div className="text-red-500">Error: {error}</div>;
@@ -185,7 +152,6 @@ function LiveLocation() {
   return (
     <div className="main">
       <div className="navbar-body">
-        {/* Display username */}
         <p className="usersname">Welcome, {username}!</p>
         <h2 className="live-location-header">
           <img
@@ -194,7 +160,6 @@ function LiveLocation() {
           />
           Live Location
         </h2>
-        {/* Logout button */}
         <p
           className="logoutbutton"
           style={{ cursor: "pointer", color: "red" }}
@@ -204,7 +169,6 @@ function LiveLocation() {
         </p>
       </div>
       <div className="live-location-container">
-        {/* Display accessed location if available */}
         {accessedLocation && (
           <div>
             <p>Accessed Location Latitude: {accessedLocation.latitude}</p>
@@ -212,20 +176,9 @@ function LiveLocation() {
           </div>
         )}
 
-        <p>Yours Latitude: {location.latitude}</p>
-        <p>Yours Longitude: {location.longitude}</p>
-        <div className="button-center">
-          <button
-            onClick={handleButtonClick}
-            disabled={isSending}
-            className="live-location-button"
-            style={{ marginBottom: "10px" }}
-          >
-            {isSending ? "Sending..." : "Send Current Location to Backend"}
-          </button>
-        </div>
+        <p>Your Latitude: {location.latitude}</p>
+        <p>Your Longitude: {location.longitude}</p>
         <div className="button-container">
-          {/* Generate token button and input */}
           <div className="button-group">
             <button onClick={generateToken} className="live-location-button">
               Generate Token
@@ -248,7 +201,6 @@ function LiveLocation() {
             </div>
           </div>
 
-          {/* Access token button and input */}
           <div className="button-group">
             <button
               onClick={accessTokenLocation}
@@ -302,23 +254,6 @@ function LiveLocation() {
                   : "Your current location"}
               </Popup>
             </Marker>
-            {/* Add a marker for accessed location with a custom icon */}
-            {accessedLocation && (
-              <Marker
-                position={[
-                  accessedLocation.latitude,
-                  accessedLocation.longitude,
-                ]}
-                icon={L.icon({
-                  iconUrl:
-                    "https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png",
-                  iconSize: [30, 30],
-                  iconAnchor: [15, 30],
-                })}
-              >
-                <Popup>Accessed Location</Popup>
-              </Marker>
-            )}
           </MapContainer>
         </div>
       </div>

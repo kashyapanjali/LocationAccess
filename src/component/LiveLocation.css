@@ -133,11 +133,6 @@ body {
 }
 
 /* Centering container for the button */
-.button-center {
-  display: flex; /* Use flexbox for centering */
-  justify-content: center;
-  margin-bottom: 20px;
-}
 
 .live-location-button:hover {
   background-color: #0056b3; /* Darker blue on hover */
