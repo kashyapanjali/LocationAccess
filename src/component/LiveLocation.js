@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./LiveLocation.css"; // Import the CSS file
+import { useNavigate } from "react-router-dom"; // Import useNavigate
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -21,8 +22,20 @@ function LiveLocation() {
   const [token, setToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [accessedLocation, setAccessedLocation] = useState(null);
+  const [username, setUsername] = useState(""); // Initialize username state
   const userId = localStorage.getItem("userId");
-  const [username, setUsername] = useState("");
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  // Retrieve username from localStorage
+  useEffect(() => {
+    const storedUsername = localStorage.getItem("username");
+    if (storedUsername) {
+      setUsername(storedUsername); // Set username if it exists
+      console.log("Username retrieved from localStorage:", storedUsername); // Debugging log
+    } else {
+      console.log("No username found in localStorage."); // Debugging log
+    }
+  }, []);
 
   const sendLocationToBackend = useCallback(
     async (currentLocation) => {
@@ -164,13 +177,13 @@ function LiveLocation() {
     }
   };
 
-  useEffect(() => {
-    // Retrieve user data from localStorage
-    const user = JSON.parse(localStorage.getItem("user"));
-    if (user) {
-      setUsername(user.username);
-    }
-  }, []);
+  // Logout function
+  const handleLogout = () => {
+    localStorage.removeItem("userId"); // Clear userId
+    localStorage.removeItem("username"); // Clear username
+    console.log("users logout:"); // Debugging log
+    navigate("/"); // Redirect to login page
+  };
 
   if (error) return <div className="text-red-500">Error: {error}</div>;
   if (!location) return <div>Loading location...</div>;
@@ -179,7 +192,7 @@ function LiveLocation() {
     <div className="main">
       <div className="navbar-body">
         {/* Display username */}
-        <p className="usersname">Welcome,{username}!</p>
+        <p className="usersname">Welcome, {username}!</p>
         <h2 className="live-location-header">
           <img
             src="https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png"
@@ -188,7 +201,11 @@ function LiveLocation() {
           Live Location
         </h2>
         {/* Logout button */}
-        <p className="logoutbutton" style={{ cursor: "pointer", color: "red" }}>
+        <p
+          className="logoutbutton"
+          style={{ cursor: "pointer", color: "red" }}
+          onClick={handleLogout}
+        >
           Logout
         </p>
       </div>

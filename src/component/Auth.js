@@ -55,6 +55,7 @@ export default function Auth() {
           password,
         });
 
+        console.log("Sign-up response:", response.data);
         setMessage("Sign-up successful! You can now sign in.");
         setIsSignUp(false);
       } catch (error) {
@@ -71,10 +72,13 @@ export default function Auth() {
           email,
           password,
         });
+        console.log("Sign-in response:", response.data);
         setMessage("Sign-in successful! Welcome back.");
 
         // Save actual userId in localStorage to use it when sending location updates
         localStorage.setItem("userId", response.data.userId);
+        localStorage.setItem("username", response.data.username);
+        console.log("Username stored in localStorage:", response.data.username);
 
         // Redirect to location page after successful login
         navigate("/location");
