@@ -20,9 +20,8 @@ export default function Auth() {
     return regex.test(email);
   };
 
-  // Password validation function
+  // Password validation function with atleast 6 characters
   const isValidPassword = (password) => {
-    // Check if password has at least 6 characters, one lowercase letter, one uppercase letter, one digit, and one special character
     const regex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     return regex.test(password);
@@ -45,9 +44,8 @@ export default function Auth() {
       );
       return;
     }
-
+    // Sign up user here
     if (isSignUp) {
-      // Sign up user here
       try {
         const response = await axios.post(`${API_URL}/register`, {
           username,
