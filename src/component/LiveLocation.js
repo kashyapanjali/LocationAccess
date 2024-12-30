@@ -47,10 +47,9 @@ function LiveLocation() {
         console.log("Location update already sent. Waiting for a new click.");
         return;
       }
-
       try {
         setIsSending(true); // Start loading state
-        await axios.post("http://localhost:3000/api/location", {
+        await axios.post("http://localhost:5000/api/location", {
           ...currentLocation,
           userid: userId,
         });
@@ -69,7 +68,6 @@ function LiveLocation() {
       setError("Geolocation is not supported by your browser");
       return;
     }
-
     navigator.geolocation.getCurrentPosition(
       (position) => {
         const currentLocation = {
@@ -89,7 +87,6 @@ function LiveLocation() {
       setError("Geolocation is not supported by your browser");
       return;
     }
-
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         const newLocation = {
@@ -152,15 +149,12 @@ function LiveLocation() {
       setError("Please enter a valid token");
       return;
     }
-
     const tokenParts = accessToken.split("-");
     if (tokenParts.length !== 3) {
       setError("Invalid token format");
       return;
     }
-
     getCurrentLocationAndSend(); // Fetch and send the current location
-
     const latitude = parseFloat(tokenParts[1]);
     const longitude = parseFloat(tokenParts[2]);
     setAccessedLocation({ latitude, longitude });
