@@ -1,5 +1,5 @@
 .auth {
-  background-color: white;
+  background: linear-gradient(135deg, #6a7675, #a1f2e4);
   height: 100vh;
   display: flex;
   flex-direction: column;
