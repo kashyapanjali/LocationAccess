@@ -101,14 +101,26 @@ function LiveLocation() {
       setError("Please allow location access to generate a token");
       return;
     }
-    const randomToken = Math.random().toString(36).substring(2, 15);
-    const newToken = `${randomToken}-${location.latitude.toFixed(
-      4
-    )}-${location.longitude.toFixed(4)}`;
-    setToken(newToken);
 
-    // Send location to backend
-    await sendLocationToBackend(location);
+    try {
+      const expiresInHours = 24; // Set expiration time in hours, modify as needed
+      const response = await axios.post("http://localhost:5000/api/token", {
+        userid: userId,
+        expiresInHours,
+      });
+
+      setToken(response.data.token);
+      console.log("Generated token:", response.data.token);
+
+      // Send the current location to the backend
+      await sendLocationToBackend(location);
+
+      // Clear any previous errors
+      setError(null);
+    } catch (error) {
+      console.error("Error generating token:", error);
+      setError("Failed to generate token. Please try again later.");
+    }
   };
 
   const copyTokenToClipboard = () => {
@@ -120,14 +132,20 @@ function LiveLocation() {
       setError("Please enter a valid token");
       return;
     }
-    const tokenParts = accessToken.split("-");
-    if (tokenParts.length !== 3) {
-      setError("Invalid token format");
-      return;
+
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/location/${accessToken}`
+      );
+      setAccessedLocation({
+        latitude: response.data.latitude,
+        longitude: response.data.longitude,
+      });
+      console.log("Accessed location:", response.data);
+    } catch (error) {
+      console.error("Error accessing location:", error);
+      setError("Failed to access location. Ensure the token is valid.");
     }
-    const latitude = parseFloat(tokenParts[1]);
-    const longitude = parseFloat(tokenParts[2]);
-    setAccessedLocation({ latitude, longitude });
   };
 
   const pasteTokenFromClipboard = async () => {
