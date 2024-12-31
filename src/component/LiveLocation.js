@@ -45,8 +45,9 @@ function LiveLocation() {
       try {
         setIsSending(true);
         await axios.post("http://localhost:5000/api/location", {
-          ...currentLocation,
           userid: userId,
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
         });
         console.log("Location sent to server:", currentLocation);
       } catch (error) {
@@ -70,6 +71,7 @@ function LiveLocation() {
           longitude: position.coords.longitude,
         };
         setLocation(newLocation);
+        sendLocationToBackend(newLocation); // Send location to backend on update
       },
       (error) => {
         setError(`Error: ${error.message}`);
@@ -81,11 +83,12 @@ function LiveLocation() {
 
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
-      if (
-        message.type === "callFunction" &&
-        message.functionName === "updateLocation"
-      ) {
-        console.log("Backend requested location update");
+      if (message.type === "locationUpdate") {
+        console.log(
+          "Received location update from WebSocket:",
+          message.location
+        );
+        setAccessedLocation(message.location); // Update accessed location from WebSocket
       }
     };
 
@@ -94,7 +97,7 @@ function LiveLocation() {
       navigator.geolocation.clearWatch(watchId);
       ws.close();
     };
-  }, []);
+  }, [sendLocationToBackend]);
 
   const generateToken = async () => {
     if (!location) {
@@ -103,17 +106,16 @@ function LiveLocation() {
     }
 
     try {
-      const expiresInHours = 24; // Set expiration time in hours, modify as needed
       const response = await axios.post("http://localhost:5000/api/token", {
         userid: userId,
-        expiresInHours,
+        location: {
+          latitude: location.latitude,
+          longitude: location.longitude,
+        },
       });
 
       setToken(response.data.token);
       console.log("Generated token:", response.data.token);
-
-      // Send the current location to the backend
-      await sendLocationToBackend(location);
 
       // Clear any previous errors
       setError(null);
