@@ -3,8 +3,8 @@ import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import "./LiveLocation.css"; // Import the CSS file
-import { useNavigate } from "react-router-dom"; // Import useNavigate
+import "./LiveLocation.css";
+import { useNavigate } from "react-router-dom";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -16,11 +16,13 @@ L.Icon.Default.mergeOptions({
 
 function LiveLocation() {
   const [location, setLocation] = useState(null);
+  const [locationName, setLocationName] = useState("");
+  const [accessedLocation, setAccessedLocation] = useState(null);
+  const [accessedLocationName, setAccessedLocationName] = useState("");
   const [error, setError] = useState(null);
   const [isSending, setIsSending] = useState(false);
   const [token, setToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [accessedLocation, setAccessedLocation] = useState(null);
   const [username, setUsername] = useState("");
   const userId = localStorage.getItem("userId");
   const navigate = useNavigate();
@@ -35,6 +37,27 @@ function LiveLocation() {
       console.log("No username found in localStorage.");
     }
   }, []);
+
+  // Fetch location name using a geocoding API
+  const getLocationName = async (latitude, longitude) => {
+    try {
+      const response = await axios.get(
+        //use external api
+        `https://nominatim.openstreetmap.org/reverse`,
+        {
+          params: {
+            lat: latitude,
+            lon: longitude,
+            format: "json",
+          },
+        }
+      );
+      return response.data.display_name || "Unknown Location";
+    } catch (error) {
+      console.error("Error fetching location name:", error);
+      return "Unknown Location";
+    }
+  };
 
   const sendLocationToBackend = useCallback(
     async (currentLocation) => {
@@ -64,23 +87,29 @@ function LiveLocation() {
       setError("Geolocation is not supported by your browser");
       return;
     }
+
     const watchId = navigator.geolocation.watchPosition(
-      (position) => {
+      async (position) => {
         const newLocation = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
         };
         setLocation(newLocation);
-        sendLocationToBackend(newLocation); // Send location to backend on update
+
+        const name = await getLocationName(
+          newLocation.latitude,
+          newLocation.longitude
+        );
+        setLocationName(name);
+
+        sendLocationToBackend(newLocation);
       },
       (error) => {
         setError(`Error: ${error.message}`);
       }
     );
 
-    // WebSocket connection
     const ws = new WebSocket("ws://localhost:3000");
-
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
       if (message.type === "locationUpdate") {
@@ -88,11 +117,10 @@ function LiveLocation() {
           "Received location update from WebSocket:",
           message.location
         );
-        setAccessedLocation(message.location); // Update accessed location from WebSocket
+        setAccessedLocation(message.location);
       }
     };
 
-    // Cleanup function
     return () => {
       navigator.geolocation.clearWatch(watchId);
       ws.close();
@@ -116,8 +144,6 @@ function LiveLocation() {
 
       setToken(response.data.token);
       console.log("Generated token:", response.data.token);
-
-      // Clear any previous errors
       setError(null);
     } catch (error) {
       console.error("Error generating token:", error);
@@ -139,11 +165,17 @@ function LiveLocation() {
       const response = await axios.get(
         `http://localhost:5000/api/location/${accessToken}`
       );
-      setAccessedLocation({
+      const newLocation = {
         latitude: response.data.latitude,
         longitude: response.data.longitude,
-      });
-      console.log("Accessed location:", response.data);
+      };
+      setAccessedLocation(newLocation);
+
+      const name = await getLocationName(
+        newLocation.latitude,
+        newLocation.longitude
+      );
+      setAccessedLocationName(name);
     } catch (error) {
       console.error("Error accessing location:", error);
       setError("Failed to access location. Ensure the token is valid.");
@@ -189,15 +221,12 @@ function LiveLocation() {
         </p>
       </div>
       <div className="live-location-container">
-        {accessedLocation && (
+        {accessedLocationName && (
           <div>
-            <p>Accessed Location Latitude: {accessedLocation.latitude}</p>
-            <p>Accessed Location Longitude: {accessedLocation.longitude}</p>
+            <p>Accessed Location: {accessedLocationName}</p>
           </div>
         )}
-
-        <p>Your Latitude: {location.latitude}</p>
-        <p>Your Longitude: {location.longitude}</p>
+        <p>Your Location: {locationName}</p>
         <div className="button-container">
           <div className="button-group">
             <button onClick={generateToken} className="live-location-button">
@@ -220,7 +249,6 @@ function LiveLocation() {
               </button>
             </div>
           </div>
-
           <div className="button-group">
             <button
               onClick={accessTokenLocation}
@@ -246,7 +274,6 @@ function LiveLocation() {
             </div>
           </div>
         </div>
-
         <div className="map-container">
           <MapContainer
             center={
@@ -269,9 +296,7 @@ function LiveLocation() {
               }
             >
               <Popup>
-                {accessedLocation
-                  ? "Accessed location"
-                  : "Your current location"}
+                {accessedLocationName ? accessedLocationName : locationName}
               </Popup>
             </Marker>
           </MapContainer>
