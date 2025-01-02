@@ -14,6 +14,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl: require("leaflet/dist/images/marker-shadow.png"),
 });
 
+// Define a custom icon for the accessed location
+const accessedLocationIcon = new L.Icon({
+  iconUrl: `${process.env.PUBLIC_URL}/red-marker-icon.png`,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+});
+
 function LiveLocation() {
   const [location, setLocation] = useState(null);
   const [locationName, setLocationName] = useState("");
@@ -288,6 +296,21 @@ function LiveLocation() {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             />
+            {accessedLocation && (
+              <Marker
+                position={[
+                  accessedLocation.latitude,
+                  accessedLocation.longitude,
+                ]}
+                icon={accessedLocationIcon} // Use the custom icon for accessed location
+              >
+                <Popup>
+                  {accessedLocationName
+                    ? accessedLocationName
+                    : "Accessed Location"}
+                </Popup>
+              </Marker>
+            )}
             <Marker
               position={
                 accessedLocation
