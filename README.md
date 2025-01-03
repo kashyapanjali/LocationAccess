@@ -1,70 +1,93 @@
-# Getting Started with Create React App
+# Live Location Tracker
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Overview
 
-## Available Scripts
+The **Live Location** is a full-stack web application that enables users to share and access real-time geographical locations securely. Built with React.js for the frontend and Node.js with Express for the backend, the application incorporates a MySQL database to store user data and real-time locations. Interactive map rendering is powered by the Leaflet library, providing a seamless and visually engaging user experience.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- **Real-Time Location Updates**: Users can view their current location on a map, which updates dynamically as they move.
+- **Secure Token-Based Access**: A unique token is generated for each user session, enabling secure sharing of real-time location data.
+- **Access Location Visualization**: Custom markers on the map display accessed locations, helping users track shared location data visually.
+- **Clipboard Integration**: Easily copy tokens to the clipboard for convenient sharing.
+- **Error Handling**: Robust mechanisms to manage geolocation issues, API errors, and database connection failures.
+- **Responsive Design**: Optimized for a smooth user experience across devices.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## Technologies Used
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Frontend
 
-### `npm run build`
+- **React.js**: Core framework for the frontend.
+- **Leaflet**: Library for interactive maps.
+- **Axios**: HTTP client for API communication.
+- **CSS**: For responsive and user-friendly design.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
-
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- **Node.js & Express.js**: Server-side framework for building RESTful APIs.
+- **WebSocket**: For real-time updates when sharing location data.
+- **MySQL**: Relational database for storing user information and location data.
 
 ### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Frontend**: Hosted on Render.
+- **Backend**: Hosted on Render with integrated MySQL database.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Installation and Setup
+
+### Frontend
+
+1. Clone the **frontend repository**:
+   ```
+   git clone https://github.com/kashyapanjali/LocationAccess
+   ```
+2. Navigate to the frontend directory:
+   ```
+   cd locationaccess
+   ```
+3. Install dependencies:
+   ```
+    npm install
+   ```
+4. Create a .env file in the root of your project and set the API URL:
+   ```
+    REACT_APP_API_URL=http://localhost:5000/api
+   ```
+
+### Backend
+
+1. Clone the backend repository:
+   ```
+    git clone https://github.com/kashyapanjali/EmergencyLocation
+   ```
+2. Navigate to the backend directory:
+   ```
+    cd emergencylocation
+   ```
+3. Install dependencies:
+   ```
+    npm install
+   ```
+4. Set up a .env file with the following variables:
+   ```
+   PORT=5000
+   DB_HOST=<your-database-host>
+   DB_USER=<your-database-username>
+   DB_PASSWORD=<your-database-password>
+   DB_NAME=<your-database-name>
+   ```
+5. Start the backend server:
+   ```
+   npm start
+   ```
+
+## Contact
+
+- Maintainer: Anjali Kashyap
+- Email: anjalikashyap9608@Gmail.com
