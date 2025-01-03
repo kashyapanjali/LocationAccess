@@ -50,6 +50,7 @@ function Otp() {
 
       // Save user ID in localStorage
       localStorage.setItem("userId", response.data.userId); // Store the user ID
+      localStorage.setItem("username", response.data.username);
 
       // Navigate to LiveLocation dashboard after successful verification
       navigate("/location"); // Redirect to LiveLocation component
