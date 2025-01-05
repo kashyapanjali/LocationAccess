@@ -11,7 +11,7 @@ export default function ResetPassword() {
   const navigate = useNavigate();
 
   // Backend URL (replace with your actual server URL)
-  const API_URL = "http://localhost:5000/api";
+  const API_URL = "https://emergencylocation.onrender.com/api";
 
   // Password strength regex
   // Updated password strength regex without unnecessary escapes

@@ -75,11 +75,14 @@ function LiveLocation() {
       }
       try {
         setIsSending(true);
-        await axios.post("http://localhost:5000/api/location", {
-          userid: userId,
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-        });
+        await axios.post(
+          "https://emergencylocation.onrender.com/api/location",
+          {
+            userid: userId,
+            latitude: currentLocation.latitude,
+            longitude: currentLocation.longitude,
+          }
+        );
         console.log("Location sent to server:", currentLocation);
       } catch (error) {
         console.error("Error sending location to server:", error);
@@ -142,13 +145,16 @@ function LiveLocation() {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/token", {
-        userid: userId,
-        location: {
-          latitude: location.latitude,
-          longitude: location.longitude,
-        },
-      });
+      const response = await axios.post(
+        "https://emergencylocation.onrender.com/api/token",
+        {
+          userid: userId,
+          location: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          },
+        }
+      );
 
       setToken(response.data.token);
       console.log("Generated token:", response.data.token);
@@ -171,7 +177,7 @@ function LiveLocation() {
 
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/location/${accessToken}`
+        `https://emergencylocation.onrender.com/api/location/${accessToken}`
       );
       const newLocation = {
         latitude: response.data.latitude,

@@ -9,7 +9,7 @@ export default function ForgetPassword() {
   const navigate = useNavigate();
 
   // Backend URL (replace with your actual server URL)
-  const API_URL = "http://localhost:5000/api";
+  const API_URL = "https://emergencylocation.onrender.com/api";
 
   // Email validation function
   const isValidEmail = (email) => {

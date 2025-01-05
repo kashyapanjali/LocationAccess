@@ -8,7 +8,7 @@ function Otp() {
   const [otp, setOtp] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false); // Loading state
-  const API_URL = "http://localhost:5000/api"; // Backend URL
+  const API_URL = "https://emergencylocation.onrender.com/api"; // Backend URL
   const navigate = useNavigate(); // Initialize useNavigate
 
   // Email validation function
