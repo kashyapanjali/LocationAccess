@@ -207,6 +207,7 @@ function LiveLocation() {
   };
 
   const handleLogout = () => {
+    // remove userid
     localStorage.removeItem("userId");
     localStorage.removeItem("username");
     navigate("/");
