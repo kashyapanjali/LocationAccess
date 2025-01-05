@@ -28,7 +28,7 @@ function LiveLocation() {
   const [accessedLocation, setAccessedLocation] = useState(null);
   const [accessedLocationName, setAccessedLocationName] = useState("");
   const [error, setError] = useState(null);
-  const [isSending, setIsSending] = useState(false);
+  // const [isSending, setIsSending] = useState(false);
   const [token, setToken] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [username, setUsername] = useState("");
@@ -74,7 +74,7 @@ function LiveLocation() {
         return;
       }
       try {
-        setIsSending(true);
+        // setIsSending(true);
         await axios.post(
           "https://emergencylocation.onrender.com/api/location",
           {
@@ -87,7 +87,7 @@ function LiveLocation() {
       } catch (error) {
         console.error("Error sending location to server:", error);
       } finally {
-        setIsSending(false);
+        // setIsSending(false);
       }
     },
     [userId]
