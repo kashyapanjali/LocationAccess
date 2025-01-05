@@ -1,12 +1,12 @@
 import React, { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./ForgetPassword.css";
 import axios from "axios";
 
 export default function ForgetPassword() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
   // Backend URL (replace with your actual server URL)
   const API_URL = "https://emergencylocation.onrender.com/api";
