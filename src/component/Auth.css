@@ -94,6 +94,10 @@ button:hover {
   button {
     width: 100%;
   }
+
+  .toggleButton {
+    font-size: 10px;
+  }
 }
 
 /* For phone-sized screens */
@@ -113,8 +117,8 @@ button:hover {
   .login_signInButton,
   button {
     width: 100%;
-    height: 20px;
-    font-size: 15px;
+    height: 10px;
+    font-size: 10px;
   }
 
   .login_logo {
@@ -124,9 +128,12 @@ button:hover {
   .login_container > h1 {
     font-size: 19px;
   }
+  .toggleButton {
+    font-size: 6px;
+  }
 
   button {
-    height: 20px;
-    font-size: 12px;
+    height: 10px;
+    font-size: 6px;
   }
 }
