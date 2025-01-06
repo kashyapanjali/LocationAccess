@@ -77,6 +77,9 @@ button:hover {
     padding: 10px;
   }
 
+  .login_container > h1 {
+    font-size: 10px;
+  }
   .login_container > form > input,
   .login_signInButton,
   button {
@@ -110,7 +113,7 @@ button:hover {
   }
 
   .login_container > h1 {
-    font-size: 19px;
+    font-size: 5px;
   }
 
   button {
