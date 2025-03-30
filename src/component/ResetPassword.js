@@ -10,7 +10,7 @@ export default function ResetPassword() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = process.env.REACT_APP_API_URL;
+	const API_URL = "https://emergencylocation.onrender.com/api";
 
 	const passwordStrengthRegex =
 		/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+={}|:";'<>?,./])[A-Za-z\d!@#$%^&*()_+={}|:";'<>?,./]{6,}$/;

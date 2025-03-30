@@ -74,7 +74,7 @@ function LiveLocation() {
 				return;
 			}
 			try {
-				await axios.post(`${process.env.REACT_APP_API_URL}/location`, {
+				await axios.post("https://emergencylocation.onrender.com/api/location", {
 					userid: userId,
 					latitude: currentLocation.latitude,
 					longitude: currentLocation.longitude,
@@ -114,7 +114,7 @@ function LiveLocation() {
 			}
 		);
 
-		const ws = new WebSocket(process.env.REACT_APP_WS_URL);
+		const ws = new WebSocket("wss://emergencylocation.onrender.com");
 		ws.onmessage = (event) => {
 			const message = JSON.parse(event.data);
 			if (message.type === "locationUpdate") {
@@ -139,7 +139,7 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.post(`${process.env.REACT_APP_API_URL}/token`, {
+			const response = await axios.post("https://emergencylocation.onrender.com/api/token", {
 				userid: userId,
 				location: {
 					latitude: location.latitude,
@@ -168,7 +168,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`${process.env.REACT_APP_API_URL}/location/${accessToken}`
+				`https://emergencylocation.onrender.com/api/location/${accessToken}`
 			);
 			const newLocation = {
 				latitude: response.data.latitude,

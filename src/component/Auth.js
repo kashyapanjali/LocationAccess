@@ -11,7 +11,7 @@ export default function Auth() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = process.env.REACT_APP_API_URL;
+	const API_URL = "https://emergencylocation.onrender.com/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {

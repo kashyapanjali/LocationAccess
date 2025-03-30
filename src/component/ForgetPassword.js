@@ -7,7 +7,7 @@ export default function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
 
-	const API_URL = process.env.REACT_APP_API_URL;
+	const API_URL = "https://emergencylocation.onrender.com/api";
 
 	const isValidEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
