@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./Auth.css";
 import axios from "axios";
+import config from "../config";
 
 export default function Auth() {
 	const [username, setUserName] = useState("");
@@ -11,7 +12,7 @@ export default function Auth() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = "https://13.203.227.147/api";
+	const API_URL = config.API_BASE_URL;
 
 	// Email validation function
 	const isValidEmail = (email) => {

@@ -5,6 +5,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./LiveLocation.css";
 import { useNavigate } from "react-router-dom";
+import config from "../config";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -34,6 +35,7 @@ function LiveLocation() {
 	const [username, setUsername] = useState("");
 	const userId = localStorage.getItem("userId");
 	const navigate = useNavigate();
+	const API_URL = config.API_BASE_URL;
 
 	// Retrieve username from localStorage
 	useEffect(() => {
@@ -74,7 +76,7 @@ function LiveLocation() {
 				return;
 			}
 			try {
-				await axios.post("https://13.203.227.147/api/location", {
+				await axios.post(`${API_URL}/location`, {
 					userid: userId,
 					latitude: currentLocation.latitude,
 					longitude: currentLocation.longitude,
@@ -84,7 +86,7 @@ function LiveLocation() {
 				console.error("Error sending location to server:", error);
 			}
 		},
-		[userId]
+		[userId, API_URL]
 	);
 
 	useEffect(() => {
@@ -114,7 +116,7 @@ function LiveLocation() {
 			}
 		);
 
-		const ws = new WebSocket("wss://13.203.227.147");
+		const ws = new WebSocket(config.WS_URL);
 		ws.onmessage = (event) => {
 			const message = JSON.parse(event.data);
 			if (message.type === "locationUpdate") {
@@ -139,13 +141,16 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.post("https://13.203.227.147/api/token", {
-				userid: userId,
-				location: {
-					latitude: location.latitude,
-					longitude: location.longitude,
-				},
-			});
+			const response = await axios.post(
+				`${API_URL}/token`,
+				{
+					userid: userId,
+					location: {
+						latitude: location.latitude,
+						longitude: location.longitude,
+					},
+				}
+			);
 
 			setToken(response.data.token);
 			console.log("Generated token:", response.data.token);
@@ -168,7 +173,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`https://13.203.227.147/api/location/${accessToken}`
+				`${API_URL}/location/${accessToken}`
 			);
 			const newLocation = {
 				latitude: response.data.latitude,
