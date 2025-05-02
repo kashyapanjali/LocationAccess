@@ -11,7 +11,7 @@ export default function Auth() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = "https://emergencylocation.onrender.com/api";
+	const API_URL = "https://13.203.227.147/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {
@@ -162,9 +162,9 @@ export default function Auth() {
 					type='button'
 					className='toggleButton'
 					onClick={toggleForm}>
-					{isSignUp
-						? "Already have an account? Sign In"
-						: "New here? Create an account"}
+					{isSignUp ?
+						"Already have an account? Sign In"
+					:	"New here? Create an account"}
 				</button>
 			</div>
 		</div>

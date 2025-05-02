@@ -1,15 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-import axios from "axios"; 
-import "./Otp.css"; 
+import axios from "axios";
+import "./Otp.css";
 
 function Otp() {
 	const [email, setEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [message, setMessage] = useState("");
-	const [loading, setLoading] = useState(false); 
-	const API_URL = "https://emergencylocation.onrender.com/api"; 
-	const navigate = useNavigate(); 
+	const [loading, setLoading] = useState(false);
+	const API_URL = "https://13.203.227.147/api";
+	const navigate = useNavigate();
 
 	const isValidEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,7 +23,7 @@ function Otp() {
 			return;
 		}
 
-		setLoading(true); 
+		setLoading(true);
 		try {
 			await axios.post(`${API_URL}/send-otp`, { email });
 			setMessage("OTP sent to your email!");
@@ -34,7 +34,7 @@ function Otp() {
 				error.response ? error.response.data : error.message
 			);
 		} finally {
-			setLoading(false); 
+			setLoading(false);
 		}
 	};
 
@@ -48,10 +48,10 @@ function Otp() {
 			setMessage(response.data.message);
 
 			// Save user ID in localStorage
-			localStorage.setItem("userId", response.data.userId); 
+			localStorage.setItem("userId", response.data.userId);
 			localStorage.setItem("username", response.data.username);
 
-			navigate("/location"); 
+			navigate("/location");
 		} catch (error) {
 			setMessage("Error verifying OTP. Please try again.");
 			console.error(

@@ -10,7 +10,7 @@ export default function ResetPassword() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = "https://emergencylocation.onrender.com/api";
+	const API_URL = "https://13.203.227.147/api";
 
 	const passwordStrengthRegex =
 		/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+={}|:";'<>?,./])[A-Za-z\d!@#$%^&*()_+={}|:";'<>?,./]{6,}$/;
@@ -37,13 +37,13 @@ export default function ResetPassword() {
 
 		try {
 			const response = await axios.post(`${API_URL}/reset-password/${token}`, {
-				newPassword: password, 
+				newPassword: password,
 			});
 
 			setMessage(
 				response.data.message || "Password has been successfully reset!"
 			);
-			setTimeout(() => navigate("/"), 2000); 
+			setTimeout(() => navigate("/"), 2000);
 		} catch (error) {
 			setMessage(
 				error.response?.data?.message ||

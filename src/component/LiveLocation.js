@@ -74,7 +74,7 @@ function LiveLocation() {
 				return;
 			}
 			try {
-				await axios.post("https://emergencylocation.onrender.com/api/location", {
+				await axios.post("https://13.203.227.147/api/location", {
 					userid: userId,
 					latitude: currentLocation.latitude,
 					longitude: currentLocation.longitude,
@@ -114,7 +114,7 @@ function LiveLocation() {
 			}
 		);
 
-		const ws = new WebSocket("wss://emergencylocation.onrender.com");
+		const ws = new WebSocket("wss://13.203.227.147");
 		ws.onmessage = (event) => {
 			const message = JSON.parse(event.data);
 			if (message.type === "locationUpdate") {
@@ -139,7 +139,7 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.post("https://emergencylocation.onrender.com/api/token", {
+			const response = await axios.post("https://13.203.227.147/api/token", {
 				userid: userId,
 				location: {
 					latitude: location.latitude,
@@ -168,7 +168,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`https://emergencylocation.onrender.com/api/location/${accessToken}`
+				`https://13.203.227.147/api/location/${accessToken}`
 			);
 			const newLocation = {
 				latitude: response.data.latitude,
@@ -281,9 +281,9 @@ function LiveLocation() {
 				<div className='map-container'>
 					<MapContainer
 						center={
-							accessedLocation
-								? [accessedLocation.latitude, accessedLocation.longitude]
-								: [location.latitude, location.longitude]
+							accessedLocation ?
+								[accessedLocation.latitude, accessedLocation.longitude]
+							:	[location.latitude, location.longitude]
 						}
 						zoom={13}
 						style={{ height: "100%", width: "100%" }}>
@@ -299,18 +299,15 @@ function LiveLocation() {
 								]}
 								icon={accessedLocationIcon}>
 								<Popup>
-									{accessedLocationName
-										? accessedLocationName
-										: "Accessed Location"}
+									{accessedLocationName ?
+										accessedLocationName
+									:	"Accessed Location"}
 								</Popup>
 							</Marker>
 						)}
 						{location && (
-							<Marker
-								position={[location.latitude, location.longitude]}>
-								<Popup>
-									{locationName}
-								</Popup>
+							<Marker position={[location.latitude, location.longitude]}>
+								<Popup>{locationName}</Popup>
 							</Marker>
 						)}
 					</MapContainer>
