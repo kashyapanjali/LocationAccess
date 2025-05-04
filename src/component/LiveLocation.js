@@ -5,7 +5,6 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./LiveLocation.css";
 import { useNavigate } from "react-router-dom";
-import config from "../config";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -35,7 +34,7 @@ function LiveLocation() {
 	const [username, setUsername] = useState("");
 	const userId = localStorage.getItem("userId");
 	const navigate = useNavigate();
-	const API_URL = config.API_BASE_URL;
+	// const API_URL = "http://13.203.227.147/api";
 
 	// Retrieve username from localStorage
 	useEffect(() => {
@@ -76,7 +75,7 @@ function LiveLocation() {
 				return;
 			}
 			try {
-				await axios.post("https://13.203.227.147/api/location", {
+				await axios.post("http://13.203.227.147/api/location", {
 					userid: userId,
 					latitude: currentLocation.latitude,
 					longitude: currentLocation.longitude,
@@ -86,7 +85,7 @@ function LiveLocation() {
 				console.error("Error sending location to server:", error);
 			}
 		},
-		[userId, API_URL]
+		[userId]
 	);
 
 	useEffect(() => {
@@ -141,7 +140,7 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.post("https://13.203.227.147/api/token", {
+			const response = await axios.post("http://13.203.227.147/api/token", {
 				userid: userId,
 				location: {
 					latitude: location.latitude,
@@ -170,7 +169,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`https://13.203.227.147/api/location/${accessToken}`
+				`http://13.203.227.147/api/location/${accessToken}`
 			);
 			const newLocation = {
 				latitude: response.data.latitude,

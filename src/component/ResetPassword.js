@@ -2,16 +2,15 @@ import React, { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "./ForgetPassword.css";
 import axios from "axios";
-import config from "../config";
 
 export default function ResetPassword() {
 	const { token } = useParams(); // Extract token from URL params
 	const [password, setPassword] = useState("");
 	const [confirmPassword, setConfirmPassword] = useState("");
 	const [message, setMessage] = useState("");
+	const API_URL = "http://13.203.227.147/api";
 	const navigate = useNavigate();
 
-	const API_URL = "https://13.203.227.147/api";
 
 	const passwordStrengthRegex =
 		/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+={}|:";'<>?,./])[A-Za-z\d!@#$%^&*()_+={}|:";'<>?,./]{6,}$/;

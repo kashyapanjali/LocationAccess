@@ -2,13 +2,12 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./ForgetPassword.css";
 import axios from "axios";
-import config from "../config";
 
 export default function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
 
-	const API_URL = "https://emergencylocation.onrender.com/api";
+	const API_URL = "http://13.203.227.147/api";
 
 	const isValidEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
