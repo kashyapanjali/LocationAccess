@@ -45,7 +45,6 @@ function Otp() {
 				email,
 				otp,
 			});
-			console.log("OTP verification response:", response.data);
 			
 			// Generate a temporary userId if missing from response
 			let userId = response.data.userId;
@@ -56,7 +55,6 @@ function Otp() {
 				userId = email.split('').reduce((acc, char) => {
 					return acc + char.charCodeAt(0);
 				}, 0);
-				console.log("Generated temporary userId:", userId);
 			}
 			
 			setMessage(response.data.message || "OTP verified successfully!");
@@ -64,7 +62,6 @@ function Otp() {
 			// Save user ID in localStorage
 			localStorage.setItem("userId", userId);
 			localStorage.setItem("username", response.data.username || email.split('@')[0]);
-			console.log("UserID stored:", userId);
 
 			navigate("/location");
 		} catch (error) {

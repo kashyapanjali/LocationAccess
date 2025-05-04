@@ -32,7 +32,15 @@ function LiveLocation() {
 	const [token, setToken] = useState("");
 	const [accessToken, setAccessToken] = useState("");
 	const [username, setUsername] = useState("");
-	const userId = localStorage.getItem("userId");
+	
+	// Use a valid user ID from your database
+	// ⚠️ IMPORTANT: Replace this with a valid user ID from your database
+	const VALID_USER_ID = 1; // Use ID of a user you've created in your database
+	
+	// Get stored userId or use the valid one
+	const storedUserId = localStorage.getItem("userId");
+	const userId = VALID_USER_ID.toString(); // Force using the valid ID
+	
 	const navigate = useNavigate();
 	// const API_URL = "http://13.203.227.147/api";
 
@@ -61,9 +69,6 @@ function LiveLocation() {
 		const storedUsername = localStorage.getItem("username");
 		if (storedUsername) {
 			setUsername(storedUsername);
-			console.log("Username retrieved from localStorage:", storedUsername);
-		} else {
-			console.log("No username found in localStorage.");
 		}
 	}, []);
 
@@ -95,36 +100,33 @@ function LiveLocation() {
 				return;
 			}
 			
-			// Use a fallback ID for testing until backend is fixed
-			// Replace '1' with an actual user ID from your database
-			const fallbackId = 1; 
-			const userIdToUse = userId || fallbackId.toString();
+			// Always use our valid user ID
+			const parsedUserId = VALID_USER_ID;
 			
 			try {
-				// Convert userId to integer and coordinates to float
-				const parsedUserId = parseInt(userIdToUse, 10);
+				// Format latitude/longitude to match database precision (9,6)
+				const lat = parseFloat(currentLocation.latitude.toFixed(6));
+				const lng = parseFloat(currentLocation.longitude.toFixed(6));
 				
-				// Check if userId is a valid number
-				if (isNaN(parsedUserId)) {
-					console.error("Invalid userId format:", userIdToUse);
+				// Ensure values are within allowable range for decimal(9,6)
+				// Maximum value for decimal(9,6) is 999.999999
+				if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+					console.error("Latitude/longitude values out of range:", lat, lng);
 					return;
 				}
 				
 				// Create payload with detailed logging
 				const payload = {
 					userid: parsedUserId,
-					latitude: parseFloat(currentLocation.latitude),
-					longitude: parseFloat(currentLocation.longitude),
+					latitude: lat,
+					longitude: lng,
 				};
-				
-				console.log("Sending location payload:", JSON.stringify(payload));
 				
 				const response = await axios.post("http://13.203.227.147/api/location", payload);
 				
-				console.log("Location update response:", response.data);
-				console.log("Location sent to server:", currentLocation);
 			} catch (error) {
 				console.error("Error sending location to server:", error);
+				
 				if (error.response) {
 					console.error("Error response:", error.response.data);
 					console.error("Error status:", error.response.status);
@@ -140,7 +142,7 @@ function LiveLocation() {
 				}
 			}
 		},
-		[userId]
+		[VALID_USER_ID]  // Use VALID_USER_ID in dependency array instead of userId
 	);
 
 	useEffect(() => {
@@ -174,10 +176,6 @@ function LiveLocation() {
 		ws.onmessage = (event) => {
 			const message = JSON.parse(event.data);
 			if (message.type === "locationUpdate") {
-				console.log(
-					"Received location update from WebSocket:",
-					message.location
-				);
 				setAccessedLocation(message.location);
 			}
 		};
@@ -194,42 +192,36 @@ function LiveLocation() {
 			return;
 		}
 		
-		// Use a fallback ID for testing until backend is fixed
-		// Replace '1' with an actual user ID from your database
-		const fallbackId = 1; 
-		const userIdToUse = userId || fallbackId.toString();
-		
-		// Convert userId to integer
-		const parsedUserId = parseInt(userIdToUse, 10);
-		
-		// Check if userId is a valid number
-		if (isNaN(parsedUserId)) {
-			console.error("Invalid userId format:", userIdToUse);
-			setError("Invalid user ID format. Please log in again.");
-			navigate("/");
-			return;
-		}
+		// Always use the valid user ID
+		const parsedUserId = VALID_USER_ID;
 
 		try {
+			// Format latitude/longitude to match database precision (9,6)
+			const lat = parseFloat(location.latitude.toFixed(6));
+			const lng = parseFloat(location.longitude.toFixed(6));
+			
+			// Ensure values are within allowable range for decimal(9,6)
+			if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
+				setError("Latitude/longitude values are out of valid range");
+				return;
+			}
+			
 			// Create payload with detailed logging
 			const payload = {
 				userid: parsedUserId,
 				location: {
-					latitude: parseFloat(location.latitude),
-					longitude: parseFloat(location.longitude),
+					latitude: lat,
+					longitude: lng,
 				},
 			};
 			
-			console.log("Sending token request payload:", JSON.stringify(payload));
-
 			const response = await axios.post("http://13.203.227.147/api/token", payload);
 
-			console.log("Token response:", response.data);
 			setToken(response.data.token);
-			console.log("Generated token:", response.data.token);
 			setError(null);
 		} catch (error) {
 			console.error("Error generating token:", error);
+			
 			if (error.response) {
 				console.error("Error response:", error.response.data);
 				console.error("Error status:", error.response.status);
@@ -252,6 +244,7 @@ function LiveLocation() {
 
 	const copyTokenToClipboard = () => {
 		navigator.clipboard.writeText(token);
+		setAccessToken(token); // Automatically set the access token to the generated token
 	};
 
 	const accessTokenLocation = async () => {
@@ -264,9 +257,16 @@ function LiveLocation() {
 			const response = await axios.get(
 				`http://13.203.227.147/api/location/${accessToken}`
 			);
+			
+			if (!response.data || !response.data.latitude || !response.data.longitude) {
+				console.error("Missing location data in response:", response.data);
+				setError("The server response is missing location data");
+				return;
+			}
+			
 			const newLocation = {
-				latitude: response.data.latitude,
-				longitude: response.data.longitude,
+				latitude: parseFloat(response.data.latitude),
+				longitude: parseFloat(response.data.longitude),
 			};
 			setAccessedLocation(newLocation);
 
@@ -277,7 +277,25 @@ function LiveLocation() {
 			setAccessedLocationName(name);
 		} catch (error) {
 			console.error("Error accessing location:", error);
-			setError("Failed to access location. Ensure the token is valid.");
+			
+			if (error.response) {
+				console.error("Error response:", error.response.data);
+				console.error("Error status:", error.response.status);
+				
+				if (error.response.status === 404) {
+					setError("Token not found. It may have expired or been deleted.");
+				} else if (error.response.status === 401) {
+					setError("Token access unauthorized. It may have expired.");
+				} else {
+					setError(`Failed to access location: ${error.response.data.message || 'Unknown error'}`);
+				}
+			} else if (error.request) {
+				console.error("No response received:", error.request);
+				setError("Failed to connect to the server. Please check your internet connection.");
+			} else {
+				console.error("Error message:", error.message);
+				setError("Failed to access location. Please try again later.");
+			}
 		}
 	};
 
