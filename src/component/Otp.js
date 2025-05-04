@@ -2,14 +2,13 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import axios from "axios";
 import "./Otp.css";
-import config from "../config";
 
 function Otp() {
 	const [email, setEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
-	const API_URL = config.API_BASE_URL;
+	const API_URL = "https://13.203.227.147/api";
 	const navigate = useNavigate();
 
 	const isValidEmail = (email) => {

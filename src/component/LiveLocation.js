@@ -76,7 +76,7 @@ function LiveLocation() {
 				return;
 			}
 			try {
-				await axios.post(`${API_URL}/location`, {
+				await axios.post("https://13.203.227.147/api/location", {
 					userid: userId,
 					latitude: currentLocation.latitude,
 					longitude: currentLocation.longitude,
@@ -116,7 +116,7 @@ function LiveLocation() {
 			}
 		);
 
-		const ws = new WebSocket(config.WS_URL);
+		const ws = new WebSocket("wss://13.203.227.147");
 		ws.onmessage = (event) => {
 			const message = JSON.parse(event.data);
 			if (message.type === "locationUpdate") {
@@ -141,16 +141,13 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.post(
-				`${API_URL}/token`,
-				{
-					userid: userId,
-					location: {
-						latitude: location.latitude,
-						longitude: location.longitude,
-					},
-				}
-			);
+			const response = await axios.post("https://13.203.227.147/api/token", {
+				userid: userId,
+				location: {
+					latitude: location.latitude,
+					longitude: location.longitude,
+				},
+			});
 
 			setToken(response.data.token);
 			console.log("Generated token:", response.data.token);
@@ -173,7 +170,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`${API_URL}/location/${accessToken}`
+				`https://13.203.227.147/api/location/${accessToken}`
 			);
 			const newLocation = {
 				latitude: response.data.latitude,
