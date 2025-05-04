@@ -45,11 +45,26 @@ function Otp() {
 				email,
 				otp,
 			});
-			setMessage(response.data.message);
+			console.log("OTP verification response:", response.data);
+			
+			// Generate a temporary userId if missing from response
+			let userId = response.data.userId;
+			
+			if (!userId) {
+				console.warn("No userId in OTP response - using email hash as temporary ID");
+				// Create a simple hash of the email to use as userId
+				userId = email.split('').reduce((acc, char) => {
+					return acc + char.charCodeAt(0);
+				}, 0);
+				console.log("Generated temporary userId:", userId);
+			}
+			
+			setMessage(response.data.message || "OTP verified successfully!");
 
 			// Save user ID in localStorage
-			localStorage.setItem("userId", response.data.userId);
-			localStorage.setItem("username", response.data.username);
+			localStorage.setItem("userId", userId);
+			localStorage.setItem("username", response.data.username || email.split('@')[0]);
+			console.log("UserID stored:", userId);
 
 			navigate("/location");
 		} catch (error) {

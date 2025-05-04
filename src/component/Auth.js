@@ -68,18 +68,35 @@ export default function Auth() {
 					password,
 				});
 				console.log("Sign-in response:", response.data);
+				
+				// Generate a temporary userId if missing from response
+				let userId = response.data.userId;
+				
+				if (!userId) {
+					console.warn("No userId in login response - using email hash as temporary ID");
+					// Create a simple hash of the email to use as userId
+					userId = email.split('').reduce((acc, char) => {
+						return acc + char.charCodeAt(0);
+					}, 0);
+					console.log("Generated temporary userId:", userId);
+				}
+				
 				setMessage("Sign-in successful! Welcome back.");
 
-				// Save actual userId in localStorage to use it when sending location updates
-				localStorage.setItem("userId", response.data.userId);
-				localStorage.setItem("username", response.data.username);
-				console.log("Username stored in localStorage:", response.data.username);
+				// Save userId in localStorage
+				localStorage.setItem("userId", userId);
+				localStorage.setItem("username", response.data.username || email.split('@')[0]);
+				console.log("Username stored:", response.data.username);
+				console.log("UserID stored:", userId);
 
 				// Redirect to location page after successful login
 				navigate("/location");
 			} catch (error) {
 				setMessage("Invalid email or password. Please try again.");
 				console.error("Sign-in error:", error);
+				if (error.response) {
+					console.error("Error response:", error.response.data);
+				}
 			}
 		}
 	};

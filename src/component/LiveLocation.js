@@ -36,6 +36,26 @@ function LiveLocation() {
 	const navigate = useNavigate();
 	// const API_URL = "http://13.203.227.147/api";
 
+	// Validate userId when component loads
+	useEffect(() => {
+		if (!userId) {
+			console.error("No userId found in localStorage");
+			navigate("/");
+			return;
+		}
+		
+		// Validate userId format
+		const parsedUserId = parseInt(userId, 10);
+		if (isNaN(parsedUserId)) {
+			console.error("Invalid userId in localStorage:", userId);
+			localStorage.removeItem("userId");
+			navigate("/");
+			return;
+		}
+		
+		console.log("Valid userId:", parsedUserId);
+	}, [userId, navigate]);
+
 	// Retrieve username from localStorage
 	useEffect(() => {
 		const storedUsername = localStorage.getItem("username");
@@ -70,19 +90,54 @@ function LiveLocation() {
 
 	const sendLocationToBackend = useCallback(
 		async (currentLocation) => {
-			if (!currentLocation || !userId) {
-				console.error("Missing location data or User ID");
+			if (!currentLocation) {
+				console.error("Missing location data");
 				return;
 			}
+			
+			// Use a fallback ID for testing until backend is fixed
+			// Replace '1' with an actual user ID from your database
+			const fallbackId = 1; 
+			const userIdToUse = userId || fallbackId.toString();
+			
 			try {
-				await axios.post("http://13.203.227.147/api/location", {
-					userid: userId,
-					latitude: currentLocation.latitude,
-					longitude: currentLocation.longitude,
-				});
+				// Convert userId to integer and coordinates to float
+				const parsedUserId = parseInt(userIdToUse, 10);
+				
+				// Check if userId is a valid number
+				if (isNaN(parsedUserId)) {
+					console.error("Invalid userId format:", userIdToUse);
+					return;
+				}
+				
+				// Create payload with detailed logging
+				const payload = {
+					userid: parsedUserId,
+					latitude: parseFloat(currentLocation.latitude),
+					longitude: parseFloat(currentLocation.longitude),
+				};
+				
+				console.log("Sending location payload:", JSON.stringify(payload));
+				
+				const response = await axios.post("http://13.203.227.147/api/location", payload);
+				
+				console.log("Location update response:", response.data);
 				console.log("Location sent to server:", currentLocation);
 			} catch (error) {
 				console.error("Error sending location to server:", error);
+				if (error.response) {
+					console.error("Error response:", error.response.data);
+					console.error("Error status:", error.response.status);
+					
+					// Check if we can get more details from the error
+					if (error.response.data && error.response.data.details) {
+						console.error("Error details:", error.response.data.details);
+					}
+				} else if (error.request) {
+					console.error("No response received:", error.request);
+				} else {
+					console.error("Error message:", error.message);
+				}
 			}
 		},
 		[userId]
@@ -138,22 +193,60 @@ function LiveLocation() {
 			setError("Please allow location access to generate a token");
 			return;
 		}
+		
+		// Use a fallback ID for testing until backend is fixed
+		// Replace '1' with an actual user ID from your database
+		const fallbackId = 1; 
+		const userIdToUse = userId || fallbackId.toString();
+		
+		// Convert userId to integer
+		const parsedUserId = parseInt(userIdToUse, 10);
+		
+		// Check if userId is a valid number
+		if (isNaN(parsedUserId)) {
+			console.error("Invalid userId format:", userIdToUse);
+			setError("Invalid user ID format. Please log in again.");
+			navigate("/");
+			return;
+		}
 
 		try {
-			const response = await axios.post("http://13.203.227.147/api/token", {
-				userid: userId,
+			// Create payload with detailed logging
+			const payload = {
+				userid: parsedUserId,
 				location: {
-					latitude: location.latitude,
-					longitude: location.longitude,
+					latitude: parseFloat(location.latitude),
+					longitude: parseFloat(location.longitude),
 				},
-			});
+			};
+			
+			console.log("Sending token request payload:", JSON.stringify(payload));
 
+			const response = await axios.post("http://13.203.227.147/api/token", payload);
+
+			console.log("Token response:", response.data);
 			setToken(response.data.token);
 			console.log("Generated token:", response.data.token);
 			setError(null);
 		} catch (error) {
 			console.error("Error generating token:", error);
-			setError("Failed to generate token. Please try again later.");
+			if (error.response) {
+				console.error("Error response:", error.response.data);
+				console.error("Error status:", error.response.status);
+				
+				// Check if we can get more details from the error
+				if (error.response.data && error.response.data.details) {
+					console.error("Error details:", error.response.data.details);
+				}
+				
+				setError(`Failed to generate token: ${error.response.data.message || 'Unknown error'}`);
+			} else if (error.request) {
+				console.error("No response received:", error.request);
+				setError("Failed to connect to the server. Please check your internet connection.");
+			} else {
+				console.error("Error message:", error.message);
+				setError("Failed to generate token. Please try again later.");
+			}
 		}
 	};
 
