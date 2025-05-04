@@ -68,49 +68,13 @@ export default function Auth() {
 					email,
 					password,
 				});
-				
-				// Add this to see the complete response
-				console.log("Full sign-in response:", response);
-				console.log("Response data:", response.data);
-				console.log("Response data type:", typeof response.data);
-				console.log("Available fields in response:", Object.keys(response.data));
-				
-				// Try to extract user ID from various possible field names
-				const userId = response.data.userId || response.data.userid || 
-							  response.data.id || response.data.user_id || 
-							  response.data.userID || response.data.user_ID;
-				
-				if (!userId) {
-					console.error("No user ID found in response. Response data:", response.data);
-					
-					// If rawUser is available, try to extract ID from it
-					if (response.data.rawUser) {
-						console.log("Raw user object:", response.data.rawUser);
-						const rawUserId = response.data.rawUser.userid || 
-										 response.data.rawUser.id ||
-										 response.data.rawUser.user_id;
-						
-						if (rawUserId) {
-							console.log("Found ID in raw user object:", rawUserId);
-							localStorage.setItem("userId", rawUserId);
-							localStorage.setItem("username", response.data.username || email.split('@')[0]);
-							setMessage("Sign-in successful! Welcome back.");
-							navigate("/location");
-							return;
-						}
-					}
-					
-					setMessage("Login successful but user ID is missing. Please try again.");
-					return;
-				}
-				
-				console.log("Found user ID:", userId, "Type:", typeof userId);
-				
-				// Save user data in localStorage
-				localStorage.setItem("userId", userId);
-				localStorage.setItem("username", response.data.username || email.split('@')[0]);
-				
+				console.log("Sign-in response:", response.data);
 				setMessage("Sign-in successful! Welcome back.");
+
+				// Save actual userId in localStorage to use it when sending location updates
+				localStorage.setItem("userId", response.data.userId);
+				localStorage.setItem("username", response.data.username);
+				console.log("Username stored in localStorage:", response.data.username);
 
 				// Redirect to location page after successful login
 				navigate("/location");
