@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./Auth.css";
 import axios from "axios";
-import config from "../config";
 
 export default function Auth() {
 	const [username, setUserName] = useState("");
@@ -12,7 +11,7 @@ export default function Auth() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = config.API_BASE_URL;
+	const API_URL = "http://13.203.227.147/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {
@@ -163,6 +162,9 @@ export default function Auth() {
 					type='button'
 					className='toggleButton'
 					onClick={toggleForm}>
+					{isSignUp ?
+						"Already have an account? Sign In"
+					:	"New here? Create an account"}
 					{isSignUp ?
 						"Already have an account? Sign In"
 					:	"New here? Create an account"}
