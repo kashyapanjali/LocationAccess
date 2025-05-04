@@ -33,12 +33,10 @@ function LiveLocation() {
 	const [accessToken, setAccessToken] = useState("");
 	const [username, setUsername] = useState("");
 	
-	// Use a valid user ID from your database
 	// ⚠️ IMPORTANT: Replace this with a valid user ID from your database
 	const VALID_USER_ID = 1; // Use ID of a user you've created in your database
 	
 	// Get stored userId or use the valid one
-	const storedUserId = localStorage.getItem("userId");
 	const userId = VALID_USER_ID.toString(); // Force using the valid ID
 	
 	const navigate = useNavigate();
@@ -60,8 +58,6 @@ function LiveLocation() {
 			navigate("/");
 			return;
 		}
-		
-		console.log("Valid userId:", parsedUserId);
 	}, [userId, navigate]);
 
 	// Retrieve username from localStorage
@@ -120,9 +116,9 @@ function LiveLocation() {
 					userid: parsedUserId,
 					latitude: lat,
 					longitude: lng,
-				};
-				
-				const response = await axios.post("http://13.203.227.147/api/location", payload);
+				};				
+				// Don't assign response if not using it
+				await axios.post("http://13.203.227.147/api/location", payload);
 				
 			} catch (error) {
 				console.error("Error sending location to server:", error);

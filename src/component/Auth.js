@@ -44,13 +44,12 @@ export default function Auth() {
 		// Sign up user here
 		if (isSignUp) {
 			try {
-				const response = await axios.post(`${API_URL}/register`, {
+				await axios.post(`${API_URL}/register`, {
 					username,
 					email,
 					password,
 				});
 
-				console.log("Sign-up response:", response.data);
 				setMessage("Sign-up successful! You can now sign in.");
 				setIsSignUp(false);
 			} catch (error) {
@@ -67,7 +66,6 @@ export default function Auth() {
 					email,
 					password,
 				});
-				console.log("Sign-in response:", response.data);
 				
 				// Generate a temporary userId if missing from response
 				let userId = response.data.userId;
@@ -78,7 +76,6 @@ export default function Auth() {
 					userId = email.split('').reduce((acc, char) => {
 						return acc + char.charCodeAt(0);
 					}, 0);
-					console.log("Generated temporary userId:", userId);
 				}
 				
 				setMessage("Sign-in successful! Welcome back.");
@@ -86,8 +83,6 @@ export default function Auth() {
 				// Save userId in localStorage
 				localStorage.setItem("userId", userId);
 				localStorage.setItem("username", response.data.username || email.split('@')[0]);
-				console.log("Username stored:", response.data.username);
-				console.log("UserID stored:", userId);
 
 				// Redirect to location page after successful login
 				navigate("/location");
