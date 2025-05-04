@@ -35,7 +35,33 @@ function LiveLocation() {
 	const [username, setUsername] = useState("");
 	const userId = localStorage.getItem("userId");
 	const navigate = useNavigate();
+
 	const API_URL = config.API_BASE_URL;
+
+	// Redirect if userId is missing
+	useEffect(() => {
+		if (!userId) {
+			console.error("No userId found in localStorage, redirecting to login");
+			navigate("/");
+			return;
+		}
+		
+		const parsedUserId = parseInt(userId, 10);
+		if (isNaN(parsedUserId)) {
+			console.error("Invalid userId in localStorage:", userId);
+			localStorage.removeItem("userId"); // Clear invalid userId
+			navigate("/");
+			return;
+		}
+	}, [userId, navigate]);
+
+	// Debug userId information
+	useEffect(() => {
+		if (config.DEBUG) {
+			console.log("UserId from localStorage:", userId);
+			console.log("UserId type:", typeof userId);
+		}
+	}, [userId]);
 
 	// Retrieve username from localStorage
 	useEffect(() => {
@@ -75,15 +101,45 @@ function LiveLocation() {
 				console.error("Missing location data or User ID");
 				return;
 			}
+			
+			// Parse userId to ensure it's a valid number
+			const parsedUserId = parseInt(userId, 10);
+			if (isNaN(parsedUserId)) {
+				console.error("userId is not a valid number:", userId);
+				return;
+			}
+			
 			try {
-				await axios.post(`${API_URL}/location`, {
-					userid: userId,
-					latitude: currentLocation.latitude,
-					longitude: currentLocation.longitude,
-				});
+				const payload = {
+					userid: parsedUserId,
+					latitude: parseFloat(currentLocation.latitude),
+					longitude: parseFloat(currentLocation.longitude),
+				};
+				
+				if (config.DEBUG) {
+					console.log("Sending location payload:", payload);
+				}
+				
+				const response = await axios.post(`${API_URL}/location`, payload);
+				
+				if (config.DEBUG) {
+					console.log("Location API response:", response.data);
+				}
+				
 				console.log("Location sent to server:", currentLocation);
 			} catch (error) {
 				console.error("Error sending location to server:", error);
+				if (config.DEBUG) {
+					if (error.response) {
+						console.error("Response data:", error.response.data);
+						console.error("Response status:", error.response.status);
+					} else if (error.request) {
+						console.error("No response received:", error.request);
+					} else {
+						console.error("Error message:", error.message);
+					}
+					console.error("Error config:", error.config);
+				}
 			}
 		},
 		[userId, API_URL]
@@ -116,21 +172,52 @@ function LiveLocation() {
 			}
 		);
 
-		const ws = new WebSocket(config.WS_URL);
-		ws.onmessage = (event) => {
-			const message = JSON.parse(event.data);
-			if (message.type === "locationUpdate") {
-				console.log(
-					"Received location update from WebSocket:",
-					message.location
-				);
-				setAccessedLocation(message.location);
+		// WebSocket connection with error handling
+		let ws;
+		
+		// Only attempt WebSocket connection if enabled in config
+		if (config.ENABLE_WEBSOCKET) {
+			try {
+				ws = new WebSocket(config.WS_URL);
+				
+				ws.onopen = () => {
+					console.log("WebSocket connection established");
+				};
+				
+				ws.onmessage = (event) => {
+					try {
+						const message = JSON.parse(event.data);
+						if (message.type === "locationUpdate") {
+							console.log(
+								"Received location update from WebSocket:",
+								message.location
+							);
+							setAccessedLocation(message.location);
+						}
+					} catch (error) {
+						console.error("Error parsing WebSocket message:", error);
+					}
+				};
+				
+				ws.onerror = (error) => {
+					console.error("WebSocket error:", error);
+				};
+				
+				ws.onclose = (event) => {
+					console.log("WebSocket connection closed:", event.code, event.reason);
+				};
+			} catch (error) {
+				console.error("Error setting up WebSocket:", error);
 			}
-		};
+		} else {
+			console.log("WebSocket disabled in config - not connecting");
+		}
 
 		return () => {
 			navigator.geolocation.clearWatch(watchId);
-			ws.close();
+			if (ws) {
+				ws.close();
+			}
 		};
 	}, [sendLocationToBackend]);
 
@@ -140,14 +227,37 @@ function LiveLocation() {
 			return;
 		}
 
+		// Check if userId exists and debug
+		if (!userId) {
+			console.error("No userId found in localStorage");
+			setError("User ID is missing. Please login again.");
+			return;
+		}
+
+		// Debug the parsed userId 
+		const parsedUserId = parseInt(userId, 10);
+		if (isNaN(parsedUserId)) {
+			console.error("userId is not a valid number:", userId);
+			setError("Invalid user ID. Please login again.");
+			return;
+		}
+
+		if (config.DEBUG) {
+			console.log("About to send token request with:", {
+				userId: userId,
+				parsedUserId: parsedUserId,
+				location: location
+			});
+		}
+
 		try {
 			const response = await axios.post(
 				`${API_URL}/token`,
 				{
-					userid: userId,
+					userid: parsedUserId,
 					location: {
-						latitude: location.latitude,
-						longitude: location.longitude,
+						latitude: parseFloat(location.latitude),
+						longitude: parseFloat(location.longitude),
 					},
 				}
 			);
@@ -158,6 +268,13 @@ function LiveLocation() {
 		} catch (error) {
 			console.error("Error generating token:", error);
 			setError("Failed to generate token. Please try again later.");
+			if (config.DEBUG) {
+				if (error.response) {
+					console.error("Response data:", error.response.data);
+					console.error("Response status:", error.response.status);
+					console.error("Full error config:", error.config);
+				}
+			}
 		}
 	};
 
@@ -176,8 +293,8 @@ function LiveLocation() {
 				`${API_URL}/location/${accessToken}`
 			);
 			const newLocation = {
-				latitude: response.data.latitude,
-				longitude: response.data.longitude,
+				latitude: parseFloat(response.data.latitude),
+				longitude: parseFloat(response.data.longitude),
 			};
 			setAccessedLocation(newLocation);
 
@@ -189,6 +306,12 @@ function LiveLocation() {
 		} catch (error) {
 			console.error("Error accessing location:", error);
 			setError("Failed to access location. Ensure the token is valid.");
+			if (config.DEBUG) {
+				if (error.response) {
+					console.error("Response data:", error.response.data);
+					console.error("Response status:", error.response.status);
+				}
+			}
 		}
 	};
 

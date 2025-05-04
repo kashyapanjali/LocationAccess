@@ -46,11 +46,23 @@ function Otp() {
 				email,
 				otp,
 			});
-			setMessage(response.data.message);
-
-			// Save user ID in localStorage
-			localStorage.setItem("userId", response.data.userId);
-			localStorage.setItem("username", response.data.username);
+			console.log("Full OTP verification response:", response.data);
+			
+			// Check which property contains the user ID
+			const userId = response.data.userId || response.data.userid || response.data.id || response.data.user_id;
+			const username = response.data.username || response.data.name || email.split('@')[0];
+			
+			if (!userId) {
+				console.error("No userId found in response:", response.data);
+				setMessage("OTP verification successful but user ID is missing. Please try again or login with password.");
+				return;
+			}
+			// Save user data in localStorage
+			localStorage.setItem("userId", userId);
+			localStorage.setItem("username", username);
+			
+			console.log("UserId stored in localStorage:", localStorage.getItem("userId"));
+			setMessage(response.data.message || "OTP verified successfully!");
 
 			navigate("/location");
 		} catch (error) {
