@@ -11,7 +11,7 @@ export default function Auth() {
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
 
-	const API_URL = "https://13.203.227.147/api";
+	const API_URL = "http://13.203.227.147/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {
@@ -105,7 +105,7 @@ export default function Auth() {
 		<div className='auth'>
 			<img
 				className='login_logo'
-				src='https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png'
+				src='http://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png'
 				alt='Location icon'
 			/>
 

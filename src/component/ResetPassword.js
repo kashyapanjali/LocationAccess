@@ -10,7 +10,7 @@ export default function ResetPassword() {
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
-	const API_URL = "https://13.203.227.147/api";
+	const API_URL = "http://13.203.227.147/api";
 	const navigate = useNavigate();
 
 

@@ -118,7 +118,7 @@ function LiveLocation() {
 					longitude: lng,
 				};				
 				// Don't assign response if not using it
-				await axios.post("https://13.203.227.147/api/location", payload);
+				await axios.post("http://13.203.227.147/api/location", payload);
 				
 			} catch (error) {
 				console.error("Error sending location to server:", error);
@@ -211,7 +211,7 @@ function LiveLocation() {
 				},
 			};
 			
-			const response = await axios.post("https://13.203.227.147/api/token", payload);
+			const response = await axios.post("http://13.203.227.147/api/token", payload);
 
 			setToken(response.data.token);
 			setError(null);
@@ -251,7 +251,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`https://13.203.227.147/api/location/${accessToken}`
+				`http://13.203.227.147/api/location/${accessToken}`
 			);
 			
 			if (!response.data || !response.data.latitude || !response.data.longitude) {
