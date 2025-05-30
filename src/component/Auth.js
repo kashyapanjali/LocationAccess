@@ -42,20 +42,19 @@ export default function Auth() {
 		// Sign up user here
 		if (isSignUp) {
 			try {
-				const response = await api.post('/register', {
+				await api.post('/register', {
 					username,
 					email,
 					password,
-				}, {
-					timeout: 10000, // 10 second timeout
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					}
 				});
 
-				setMessage("Sign-up successful! You can now sign in.");
-				setIsSignUp(false);
+				// Check if the response indicates success (200 or 201)
+				if (response.status === 200 || response.status === 201) {
+					setMessage("Sign-up successful! You can now sign in.");
+					setIsSignUp(false);
+				} else {
+					setMessage("Unexpected response from server. Please try again.");
+				}
 			} catch (error) {
 				console.error("Sign-up error:", error);
 				
@@ -65,10 +64,6 @@ export default function Auth() {
 						// 201 Created is actually a success
 						setMessage("Sign-up successful! You can now sign in.");
 						setIsSignUp(false);
-					} else if (error.response.status === 409) {
-						// Handle conflict - user already exists
-						setMessage("An account with this email already exists. Please sign in instead.");
-						setIsSignUp(false); // Switch to sign in mode
 					} else {
 						setMessage(error.response.data?.message || "Error signing up. Please try again.");
 					}
@@ -78,10 +73,6 @@ export default function Auth() {
 				} else {
 					setMessage("Error signing up. Please try again.");
 				}
-				console.error(
-					"Sign-up error:",
-					error.response ? error.response.data : error.message
-				);
 			}
 		} else {
 			// Sign in user
