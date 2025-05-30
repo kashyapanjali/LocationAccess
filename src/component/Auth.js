@@ -46,38 +46,28 @@ export default function Auth() {
 					username,
 					email,
 					password,
+				}, {
+					timeout: 10000, // 10 second timeout
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
 				});
 
-				// Check if the response indicates success (200 or 201)
-				if (response.status === 200 || response.status === 201) {
-					setMessage("Sign-up successful! You can now sign in.");
-					setIsSignUp(false);
-				} else {
-					setMessage("Unexpected response from server. Please try again.");
-				}
+				setMessage("Sign-up successful! You can now sign in.");
+				setIsSignUp(false);
 			} catch (error) {
-				console.error("Sign-up error:", error);
-				
-				if (error.response) {
-					// Server responded with an error
-					if (error.response.status === 201) {
-						// 201 Created is actually a success
-						setMessage("Sign-up successful! You can now sign in.");
-						setIsSignUp(false);
-					} else if (error.response.status === 409) {
-						// Handle conflict - user already exists
-						setMessage("An account with this email already exists. Please sign in instead.");
-						setIsSignUp(false); // Switch to sign in mode
-					} else {
-						setMessage(error.response.data?.message || "Error signing up. Please try again.");
-					}
-				} else if (error.request) {
-					// Request was made but no response received
-					setMessage("No response from server. Please check your connection and try again.");
+				if (error.code === 'ECONNABORTED') {
+					setMessage("Connection timed out. Please check your internet connection and try again.");
+				} else if (!error.response) {
+					setMessage("Network error. Please check your internet connection and try again.");
 				} else {
-					// Error in request configuration
 					setMessage("Error signing up. Please try again.");
 				}
+				console.error(
+					"Sign-up error:",
+					error.response ? error.response.data : error.message
+				);
 			}
 		} else {
 			// Sign in user

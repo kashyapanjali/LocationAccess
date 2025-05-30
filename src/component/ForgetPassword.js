@@ -23,22 +23,10 @@ export default function ForgetPassword() {
 		}
 
 		try {
-			await axios.post(`${API_URL}/forget-password`, { email }, {
-				timeout: 10000, // 10 second timeout
-				headers: {
-					'Content-Type': 'application/json',
-					'Accept': 'application/json'
-				}
-			});
+			await axios.post(`${API_URL}/forget-password`, { email });
 			setMessage("Password reset email sent! Check your inbox.");
 		} catch (error) {
-			if (error.code === 'ECONNABORTED') {
-				setMessage("Connection timed out. Please check your internet connection and try again.");
-			} else if (!error.response) {
-				setMessage("Network error. Please check your internet connection and try again.");
-			} else {
-				setMessage("Error sending password reset email. Please try again.");
-			}
+			setMessage("Error sending password reset email. Please try again.");
 			console.error("Forget password error:", error);
 		}
 	};
