@@ -25,10 +25,22 @@ function Otp() {
 
 		setLoading(true);
 		try {
-			await axios.post(`${API_URL}/send-otp`, { email });
+			await axios.post(`${API_URL}/send-otp`, { email }, {
+				timeout: 10000, // 10 second timeout
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
+			});
 			setMessage("OTP sent to your email!");
 		} catch (error) {
-			setMessage("Error sending OTP. Please try again.");
+			if (error.code === 'ECONNABORTED') {
+				setMessage("Connection timed out. Please check your internet connection and try again.");
+			} else if (!error.response) {
+				setMessage("Network error. Please check your internet connection and try again.");
+			} else {
+				setMessage("Error sending OTP. Please try again.");
+			}
 			console.error(
 				"Send OTP error:",
 				error.response ? error.response.data : error.message
@@ -44,6 +56,12 @@ function Otp() {
 			const response = await axios.post(`${API_URL}/verify-otp`, {
 				email,
 				otp,
+			}, {
+				timeout: 10000, // 10 second timeout
+				headers: {
+					'Content-Type': 'application/json',
+					'Accept': 'application/json'
+				}
 			});
 			
 			// Generate a temporary userId if missing from response

@@ -48,12 +48,24 @@ export default function Auth() {
 					username,
 					email,
 					password,
+				}, {
+					timeout: 10000, // 10 second timeout
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
 				});
 
 				setMessage("Sign-up successful! You can now sign in.");
 				setIsSignUp(false);
 			} catch (error) {
-				setMessage("Error signing up. Please try again.");
+				if (error.code === 'ECONNABORTED') {
+					setMessage("Connection timed out. Please check your internet connection and try again.");
+				} else if (!error.response) {
+					setMessage("Network error. Please check your internet connection and try again.");
+				} else {
+					setMessage("Error signing up. Please try again.");
+				}
 				console.error(
 					"Sign-up error:",
 					error.response ? error.response.data : error.message
@@ -65,6 +77,12 @@ export default function Auth() {
 				const response = await axios.post(`${API_URL}/login`, {
 					email,
 					password,
+				}, {
+					timeout: 10000, // 10 second timeout
+					headers: {
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
 				});
 				
 				// Generate a temporary userId if missing from response
