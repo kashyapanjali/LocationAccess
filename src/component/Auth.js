@@ -64,6 +64,10 @@ export default function Auth() {
 						// 201 Created is actually a success
 						setMessage("Sign-up successful! You can now sign in.");
 						setIsSignUp(false);
+					} else if (error.response.status === 409) {
+						// Handle conflict - user already exists
+						setMessage("An account with this email already exists. Please sign in instead.");
+						setIsSignUp(false); // Switch to sign in mode
 					} else {
 						setMessage(error.response.data?.message || "Error signing up. Please try again.");
 					}
