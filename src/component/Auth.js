@@ -1,34 +1,42 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState} from "react";
+import React, { useState } from "react";
 import "./Auth.css";
 import axios from "axios";
 
-// Add axios interceptor for retries
-axios.interceptors.response.use(undefined, async (err) => {
-	const { config } = err;
-	if (!config || !config.retry) {
-		return Promise.reject(err);
+// Create axios instance with base configuration
+const api = axios.create({
+	baseURL: 'https://13.203.227.147/api',
+	timeout: 30000,
+	headers: {
+		'Content-Type': 'application/json',
+		'Accept': 'application/json'
 	}
-	
-	config.retryCount = config.retryCount || 0;
-	
-	if (config.retryCount >= config.retry) {
-		return Promise.reject(err);
-	}
-	
-	config.retryCount += 1;
-	
-	// Create new promise to handle retry
-	const backoff = new Promise((resolve) => {
-		setTimeout(() => {
-			resolve();
-		}, config.retryDelay || 1000);
-	});
-	
-	// Return the promise in which recalls axios to retry the request
-	await backoff;
-	return axios(config);
 });
+
+// Add request interceptor
+api.interceptors.request.use(
+	(config) => {
+		// Add timestamp to prevent caching
+		config.params = { ...config.params, _t: Date.now() };
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	}
+);
+
+// Add response interceptor
+api.interceptors.response.use(
+	(response) => response,
+	async (error) => {
+		if (error.code === 'ECONNABORTED' || !error.response) {
+			// Handle timeout or network errors
+			console.error('Network error:', error);
+			throw new Error('Network error. Please check your connection and try again.');
+		}
+		return Promise.reject(error);
+	}
+);
 
 export default function Auth() {
 	const [username, setUserName] = useState("");
@@ -37,8 +45,6 @@ export default function Auth() {
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
-
-	const API_URL = "https://13.203.227.147/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {
@@ -71,49 +77,28 @@ export default function Auth() {
 		// Sign up user here
 		if (isSignUp) {
 			try {
-				await axios.post(`${API_URL}/register`, {
+				await api.post('/register', {
 					username,
 					email,
 					password,
-				}, {
-					timeout: 30000, // Increased to 30 seconds
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					},
-					retry: 3, // Add retry attempts
-					retryDelay: 1000 // Wait 1 second between retries
 				});
 
 				setMessage("Sign-up successful! You can now sign in.");
 				setIsSignUp(false);
 			} catch (error) {
-				if (error.code === 'ECONNABORTED') {
-					setMessage("Server is taking too long to respond. Please try again in a few moments.");
-				} else if (!error.response) {
-					setMessage("Network error. Please check your internet connection and try again.");
+				if (error.message.includes('Network error')) {
+					setMessage("Unable to connect to the server. Please check your internet connection and try again.");
 				} else {
 					setMessage("Error signing up. Please try again.");
 				}
-				console.error(
-					"Sign-up error:",
-					error.response ? error.response.data : error.message
-				);
+				console.error("Sign-up error:", error);
 			}
 		} else {
 			// Sign in user
 			try {
-				const response = await axios.post(`${API_URL}/login`, {
+				const response = await api.post('/login', {
 					email,
 					password,
-				}, {
-					timeout: 30000, // Increased to 30 seconds
-					headers: {
-						'Content-Type': 'application/json',
-						'Accept': 'application/json'
-					},
-					retry: 3, // Add retry attempts
-					retryDelay: 1000 // Wait 1 second between retries
 				});
 				
 				// Generate a temporary userId if missing from response
@@ -136,11 +121,12 @@ export default function Auth() {
 				// Redirect to location page after successful login
 				navigate("/location");
 			} catch (error) {
-				setMessage("Invalid email or password. Please try again.");
-				console.error("Sign-in error:", error);
-				if (error.response) {
-					console.error("Error response:", error.response.data);
+				if (error.message.includes('Network error')) {
+					setMessage("Unable to connect to the server. Please check your internet connection and try again.");
+				} else {
+					setMessage("Invalid email or password. Please try again.");
 				}
+				console.error("Sign-in error:", error);
 			}
 		}
 	};
