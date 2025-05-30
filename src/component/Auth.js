@@ -1,7 +1,34 @@
 import { Link, useNavigate } from "react-router-dom";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./Auth.css";
 import axios from "axios";
+
+// Add axios interceptor for retries
+axios.interceptors.response.use(undefined, async (err) => {
+	const { config } = err;
+	if (!config || !config.retry) {
+		return Promise.reject(err);
+	}
+	
+	config.retryCount = config.retryCount || 0;
+	
+	if (config.retryCount >= config.retry) {
+		return Promise.reject(err);
+	}
+	
+	config.retryCount += 1;
+	
+	// Create new promise to handle retry
+	const backoff = new Promise((resolve) => {
+		setTimeout(() => {
+			resolve();
+		}, config.retryDelay || 1000);
+	});
+	
+	// Return the promise in which recalls axios to retry the request
+	await backoff;
+	return axios(config);
+});
 
 export default function Auth() {
 	const [username, setUserName] = useState("");
@@ -49,18 +76,20 @@ export default function Auth() {
 					email,
 					password,
 				}, {
-					timeout: 10000, // 10 second timeout
+					timeout: 30000, // Increased to 30 seconds
 					headers: {
 						'Content-Type': 'application/json',
 						'Accept': 'application/json'
-					}
+					},
+					retry: 3, // Add retry attempts
+					retryDelay: 1000 // Wait 1 second between retries
 				});
 
 				setMessage("Sign-up successful! You can now sign in.");
 				setIsSignUp(false);
 			} catch (error) {
 				if (error.code === 'ECONNABORTED') {
-					setMessage("Connection timed out. Please check your internet connection and try again.");
+					setMessage("Server is taking too long to respond. Please try again in a few moments.");
 				} else if (!error.response) {
 					setMessage("Network error. Please check your internet connection and try again.");
 				} else {
@@ -78,11 +107,13 @@ export default function Auth() {
 					email,
 					password,
 				}, {
-					timeout: 10000, // 10 second timeout
+					timeout: 30000, // Increased to 30 seconds
 					headers: {
 						'Content-Type': 'application/json',
 						'Accept': 'application/json'
-					}
+					},
+					retry: 3, // Add retry attempts
+					retryDelay: 1000 // Wait 1 second between retries
 				});
 				
 				// Generate a temporary userId if missing from response
