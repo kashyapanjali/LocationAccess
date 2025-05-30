@@ -50,12 +50,6 @@ api.interceptors.response.use(
             return error.response;
         }
 
-        if (error.response.status === 409) {
-            // 409 Conflict - user already exists
-            console.error('Conflict error:', error.response.data);
-            throw error; // Let the component handle the specific error message
-        }
-
         // Handle other errors
         console.error('API Error:', error.response?.data || error.message);
         throw error;

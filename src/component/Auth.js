@@ -57,10 +57,24 @@ export default function Auth() {
 				setMessage("Sign-up successful! You can now sign in.");
 				setIsSignUp(false);
 			} catch (error) {
-				if (error.code === 'ECONNABORTED') {
-					setMessage("Connection timed out. Please check your internet connection and try again.");
-				} else if (!error.response) {
-					setMessage("Network error. Please check your internet connection and try again.");
+				console.error("Sign-up error:", error);
+				
+				if (error.response) {
+					// Server responded with an error
+					if (error.response.status === 201) {
+						// 201 Created is actually a success
+						setMessage("Sign-up successful! You can now sign in.");
+						setIsSignUp(false);
+					} else if (error.response.status === 409) {
+						// Handle conflict - user already exists
+						setMessage("An account with this email already exists. Please sign in instead.");
+						setIsSignUp(false); // Switch to sign in mode
+					} else {
+						setMessage(error.response.data?.message || "Error signing up. Please try again.");
+					}
+				} else if (error.request) {
+					// Request was made but no response received
+					setMessage("No response from server. Please check your connection and try again.");
 				} else {
 					setMessage("Error signing up. Please try again.");
 				}
