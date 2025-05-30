@@ -24,14 +24,35 @@ api.interceptors.request.use(
 
 // Add response interceptor
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        if (error.code === 'ECONNABORTED' || !error.response) {
-            // Handle timeout or network errors
-            console.error('Network error:', error);
-            throw new Error('Network error. Please check your connection and try again.');
+    (response) => {
+        // Handle successful responses (including 201 Created)
+        if (response.status >= 200 && response.status < 300) {
+            return response;
         }
-        return Promise.reject(error);
+        return Promise.reject(response);
+    },
+    async (error) => {
+        // Handle network errors
+        if (error.code === 'ECONNABORTED') {
+            console.error('Request timeout:', error);
+            throw new Error('Request timed out. Please try again.');
+        }
+        
+        // Handle no response
+        if (!error.response) {
+            console.error('No response received:', error);
+            throw new Error('No response from server. Please check your connection and try again.');
+        }
+
+        // Handle specific status codes
+        if (error.response.status === 201) {
+            // 201 Created is actually a success
+            return error.response;
+        }
+
+        // Handle other errors
+        console.error('API Error:', error.response?.data || error.message);
+        throw error;
     }
 );
 

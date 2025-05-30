@@ -42,21 +42,38 @@ export default function Auth() {
 		// Sign up user here
 		if (isSignUp) {
 			try {
-				await api.post('/register', {
+				const response = await api.post('/register', {
 					username,
 					email,
 					password,
 				});
 
-				setMessage("Sign-up successful! You can now sign in.");
-				setIsSignUp(false);
-			} catch (error) {
-				if (error.message.includes('Network error')) {
-					setMessage("Unable to connect to the server. Please check your internet connection and try again.");
+				// Check if the response indicates success (200 or 201)
+				if (response.status === 200 || response.status === 201) {
+					setMessage("Sign-up successful! You can now sign in.");
+					setIsSignUp(false);
 				} else {
+					setMessage("Unexpected response from server. Please try again.");
+				}
+			} catch (error) {
+				console.error("Sign-up error:", error);
+				
+				if (error.response) {
+					// Server responded with an error
+					if (error.response.status === 201) {
+						// 201 Created is actually a success
+						setMessage("Sign-up successful! You can now sign in.");
+						setIsSignUp(false);
+					} else {
+						setMessage(error.response.data?.message || "Error signing up. Please try again.");
+					}
+				} else if (error.request) {
+					// Request was made but no response received
+					setMessage("No response from server. Please check your connection and try again.");
+				} else {
+					// Error in request configuration
 					setMessage("Error signing up. Please try again.");
 				}
-				console.error("Sign-up error:", error);
 			}
 		} else {
 			// Sign in user
