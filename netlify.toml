@@ -2,3 +2,9 @@
 from = "/*"
 to = "/index.html"
 status = 200
+
+[[redirects]]
+from = "/api/*"
+to = "http://13.203.227.147/api/:splat"
+status = 200
+force = true

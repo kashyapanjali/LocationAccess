@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance with base configuration
 const api = axios.create({
-    baseURL: 'https://13.203.227.147/api',
+    baseURL: '/api',  // Using relative path that will be proxied through Netlify
     timeout: 30000,
     headers: {
         'Content-Type': 'application/json',
