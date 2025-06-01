@@ -7,7 +7,8 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-    }
+    },
+    withCredentials: true  // Enable sending cookies with requests
 });
 
 // Add request interceptor
@@ -18,6 +19,7 @@ api.interceptors.request.use(
         return config;
     },
     (error) => {
+        console.error('Request error:', error);
         return Promise.reject(error);
     }
 );
@@ -31,6 +33,23 @@ api.interceptors.response.use(
             console.error('Network error:', error);
             throw new Error('Network error. Please check your connection and try again.');
         }
+        
+        // Handle specific error cases
+        if (error.response) {
+            switch (error.response.status) {
+                case 401:
+                    throw new Error('Unauthorized. Please sign in again.');
+                case 403:
+                    throw new Error('Access denied. Please check your permissions.');
+                case 404:
+                    throw new Error('Resource not found. Please check the URL.');
+                case 500:
+                    throw new Error('Server error. Please try again later.');
+                default:
+                    throw new Error(error.response.data?.message || 'An error occurred. Please try again.');
+            }
+        }
+        
         return Promise.reject(error);
     }
 );
