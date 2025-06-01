@@ -5,6 +5,12 @@ status = 200
 force = true
 
 [[redirects]]
+from = "/ws"
+to = "ws://13.203.227.147"
+status = 200
+force = true
+
+[[redirects]]
 from = "/*"
 to = "/index.html"
 status = 200

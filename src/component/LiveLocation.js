@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import "./LiveLocation.css";
 import { useNavigate } from "react-router-dom";
+import api from "../config";
 
 // Fix for default marker icon
 delete L.Icon.Default.prototype._getIconUrl;
@@ -32,6 +33,7 @@ function LiveLocation() {
 	const [token, setToken] = useState("");
 	const [accessToken, setAccessToken] = useState("");
 	const [username, setUsername] = useState("");
+	const [locations, setLocations] = useState([]);
 	
 	// ⚠️ IMPORTANT: Replace this with a valid user ID from your database
 	const VALID_USER_ID = 1; // Use ID of a user you've created in your database
@@ -310,6 +312,75 @@ function LiveLocation() {
 		localStorage.removeItem("userId");
 		localStorage.removeItem("username");
 		navigate("/");
+	};
+
+	const sendLocation = async (position) => {
+		try {
+			const payload = {
+				userId: localStorage.getItem("userId"),
+				latitude: position.coords.latitude,
+				longitude: position.coords.longitude,
+				timestamp: new Date().toISOString(),
+			};
+
+			await api.post("/location", payload);
+		} catch (error) {
+			console.error("Error sending location:", error);
+		}
+	};
+
+	const connectWebSocket = () => {
+		const ws = new WebSocket("wss://13.203.227.147");
+		
+		ws.onopen = () => {
+			console.log("WebSocket connected");
+		};
+
+		ws.onmessage = (event) => {
+			const data = JSON.parse(event.data);
+			// Handle incoming location updates
+			if (data.type === "location_update") {
+				setLocations((prev) => [...prev, data.location]);
+			}
+		};
+
+		ws.onerror = (error) => {
+			console.error("WebSocket error:", error);
+		};
+
+		ws.onclose = () => {
+			console.log("WebSocket disconnected");
+			// Attempt to reconnect after 5 seconds
+			setTimeout(connectWebSocket, 5000);
+		};
+
+		return ws;
+	};
+
+	const getAccessToken = async () => {
+		try {
+			const payload = {
+				userId: localStorage.getItem("userId"),
+			};
+
+			const response = await api.post("/token", payload);
+			return response.data.accessToken;
+		} catch (error) {
+			console.error("Error getting access token:", error);
+			return null;
+		}
+	};
+
+	const fetchLocations = async () => {
+		try {
+			const accessToken = await getAccessToken();
+			if (!accessToken) return;
+
+			const response = await api.get(`/location/${accessToken}`);
+			setLocations(response.data);
+		} catch (error) {
+			console.error("Error fetching locations:", error);
+		}
 	};
 
 	if (error) return <div className='text-red-500'>Error: {error}</div>;

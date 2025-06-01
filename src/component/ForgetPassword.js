@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import "./ForgetPassword.css";
-import axios from "axios";
+import api from "../config";
 
 export default function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
-
-	const API_URL = "http://13.203.227.147/api";
+	const [loading, setLoading] = useState(false);
 
 	const isValidEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 		return regex.test(email);
 	};
 
-	const handleForgetPassword = async (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
+		setLoading(true);
 
 		if (!isValidEmail(email)) {
 			setMessage("Please enter a valid email address.");
@@ -23,11 +23,16 @@ export default function ForgetPassword() {
 		}
 
 		try {
-			await axios.post(`${API_URL}/forget-password`, { email });
-			setMessage("Password reset email sent! Check your inbox.");
+			await api.post("/forget-password", {
+				email,
+			});
+
+			setMessage("Password reset link has been sent to your email!");
 		} catch (error) {
-			setMessage("Error sending password reset email. Please try again.");
+			setMessage("Error sending reset link. Please try again.");
 			console.error("Forget password error:", error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
@@ -47,7 +52,7 @@ export default function ForgetPassword() {
 
 				<form
 					className='form'
-					onSubmit={handleForgetPassword}>
+					onSubmit={handleSubmit}>
 					<h5>E-mail</h5>
 					<input
 						type='email'
@@ -58,8 +63,9 @@ export default function ForgetPassword() {
 					/>
 					<button
 						type='submit'
-						className='login_signInButton'>
-						Send Reset Link
+						className='login_signInButton'
+						disabled={loading}>
+						{loading ? "Sending..." : "Send Reset Link"}
 					</button>
 				</form>
 
