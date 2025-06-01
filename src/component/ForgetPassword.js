@@ -7,7 +7,7 @@ export default function ForgetPassword() {
 	const [email, setEmail] = useState("");
 	const [message, setMessage] = useState("");
 
-	const API_URL = "http://13.203.227.147/api";
+	const API_URL = "https://brainbrief.in/api";
 
 	const isValidEmail = (email) => {
 		const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

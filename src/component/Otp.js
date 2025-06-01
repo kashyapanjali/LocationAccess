@@ -8,7 +8,7 @@ function Otp() {
 	const [otp, setOtp] = useState("");
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
-	const API_URL = "http://13.203.227.147/api";
+	const API_URL = "https://brainbrief.in/api";
 	const navigate = useNavigate();
 
 	const isValidEmail = (email) => {
