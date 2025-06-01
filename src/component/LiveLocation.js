@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useRef } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -29,20 +29,14 @@ function LiveLocation() {
 	const [accessedLocation, setAccessedLocation] = useState(null);
 	const [accessedLocationName, setAccessedLocationName] = useState("");
 	const [error, setError] = useState(null);
-	// const [isSending, setIsSending] = useState(false);
 	const [token, setToken] = useState("");
 	const [accessToken, setAccessToken] = useState("");
 	const [username, setUsername] = useState("");
-	const [locations, setLocations] = useState([]);
 	
 	// ⚠️ IMPORTANT: Replace this with a valid user ID from your database
 	const VALID_USER_ID = 1; // Use ID of a user you've created in your database
 	
-	// Get stored userId or use the valid one
-	const userId = VALID_USER_ID.toString(); // Force using the valid ID
-	
 	const navigate = useNavigate();
-	// const API_URL = "https://13.203.227.147/api";
 
 	// Validate userId when component loads
 	useEffect(() => {
@@ -74,7 +68,6 @@ function LiveLocation() {
 	const getLocationName = async (latitude, longitude) => {
 		try {
 			const response = await axios.get(
-				//use external api
 				`https://nominatim.openstreetmap.org/reverse`,
 				{
 					params: {
@@ -107,7 +100,6 @@ function LiveLocation() {
 				const lng = parseFloat(currentLocation.longitude.toFixed(6));
 				
 				// Ensure values are within allowable range for decimal(9,6)
-				// Maximum value for decimal(9,6) is 999.999999
 				if (Math.abs(lat) > 90 || Math.abs(lng) > 180) {
 					console.error("Latitude/longitude values out of range:", lat, lng);
 					return;
@@ -119,8 +111,7 @@ function LiveLocation() {
 					latitude: lat,
 					longitude: lng,
 				};				
-				// Don't assign response if not using it
-				await axios.post("http://13.203.227.147/api/location", payload);
+				await api.post("/location", payload);
 				
 			} catch (error) {
 				console.error("Error sending location to server:", error);
@@ -128,11 +119,6 @@ function LiveLocation() {
 				if (error.response) {
 					console.error("Error response:", error.response.data);
 					console.error("Error status:", error.response.status);
-					
-					// Check if we can get more details from the error
-					if (error.response.data && error.response.data.details) {
-						console.error("Error details:", error.response.data.details);
-					}
 				} else if (error.request) {
 					console.error("No response received:", error.request);
 				} else {
@@ -140,7 +126,7 @@ function LiveLocation() {
 				}
 			}
 		},
-		[VALID_USER_ID]  // Use VALID_USER_ID in dependency array instead of userId
+		[VALID_USER_ID]
 	);
 
 	useEffect(() => {
@@ -213,7 +199,7 @@ function LiveLocation() {
 				},
 			};
 			
-			const response = await axios.post("http://13.203.227.147/api/token", payload);
+			const response = await api.post("/token", payload);
 
 			setToken(response.data.token);
 			setError(null);
@@ -223,12 +209,6 @@ function LiveLocation() {
 			if (error.response) {
 				console.error("Error response:", error.response.data);
 				console.error("Error status:", error.response.status);
-				
-				// Check if we can get more details from the error
-				if (error.response.data && error.response.data.details) {
-					console.error("Error details:", error.response.data.details);
-				}
-				
 				setError(`Failed to generate token: ${error.response.data.message || 'Unknown error'}`);
 			} else if (error.request) {
 				console.error("No response received:", error.request);
@@ -252,9 +232,7 @@ function LiveLocation() {
 		}
 
 		try {
-			const response = await axios.get(
-				`http://13.203.227.147/api/location/${accessToken}`
-			);
+			const response = await api.get(`/location/${accessToken}`);
 			
 			if (!response.data || !response.data.latitude || !response.data.longitude) {
 				console.error("Missing location data in response:", response.data);
@@ -308,79 +286,9 @@ function LiveLocation() {
 	};
 
 	const handleLogout = () => {
-		// remove userid
 		localStorage.removeItem("userId");
 		localStorage.removeItem("username");
 		navigate("/");
-	};
-
-	const sendLocation = async (position) => {
-		try {
-			const payload = {
-				userId: localStorage.getItem("userId"),
-				latitude: position.coords.latitude,
-				longitude: position.coords.longitude,
-				timestamp: new Date().toISOString(),
-			};
-
-			await api.post("/location", payload);
-		} catch (error) {
-			console.error("Error sending location:", error);
-		}
-	};
-
-	const connectWebSocket = () => {
-		const ws = new WebSocket("wss://13.203.227.147");
-		
-		ws.onopen = () => {
-			console.log("WebSocket connected");
-		};
-
-		ws.onmessage = (event) => {
-			const data = JSON.parse(event.data);
-			// Handle incoming location updates
-			if (data.type === "location_update") {
-				setLocations((prev) => [...prev, data.location]);
-			}
-		};
-
-		ws.onerror = (error) => {
-			console.error("WebSocket error:", error);
-		};
-
-		ws.onclose = () => {
-			console.log("WebSocket disconnected");
-			// Attempt to reconnect after 5 seconds
-			setTimeout(connectWebSocket, 5000);
-		};
-
-		return ws;
-	};
-
-	const getAccessToken = async () => {
-		try {
-			const payload = {
-				userId: localStorage.getItem("userId"),
-			};
-
-			const response = await api.post("/token", payload);
-			return response.data.accessToken;
-		} catch (error) {
-			console.error("Error getting access token:", error);
-			return null;
-		}
-	};
-
-	const fetchLocations = async () => {
-		try {
-			const accessToken = await getAccessToken();
-			if (!accessToken) return;
-
-			const response = await api.get(`/location/${accessToken}`);
-			setLocations(response.data);
-		} catch (error) {
-			console.error("Error fetching locations:", error);
-		}
 	};
 
 	if (error) return <div className='text-red-500'>Error: {error}</div>;
