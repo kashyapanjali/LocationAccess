@@ -40,21 +40,22 @@ function LiveLocation() {
 
 	// Validate userId when component loads
 	useEffect(() => {
-		if (!userId) {
+		const storedUserId = localStorage.getItem("userId");
+		if (!storedUserId) {
 			console.error("No userId found in localStorage");
 			navigate("/");
 			return;
 		}
 		
 		// Validate userId format
-		const parsedUserId = parseInt(userId, 10);
+		const parsedUserId = parseInt(storedUserId, 10);
 		if (isNaN(parsedUserId)) {
-			console.error("Invalid userId in localStorage:", userId);
+			console.error("Invalid userId in localStorage:", storedUserId);
 			localStorage.removeItem("userId");
 			navigate("/");
 			return;
 		}
-	}, [userId, navigate]);
+	}, [navigate]);
 
 	// Retrieve username from localStorage
 	useEffect(() => {
