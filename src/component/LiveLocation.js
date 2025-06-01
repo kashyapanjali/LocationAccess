@@ -40,7 +40,7 @@ function LiveLocation() {
 	const userId = VALID_USER_ID.toString(); // Force using the valid ID
 	
 	const navigate = useNavigate();
-	// const API_URL = "https://13.203.227.147/api";
+	// const API_URL = "https://brainbrief.in/api";
 
 	// Validate userId when component loads
 	useEffect(() => {
@@ -118,7 +118,7 @@ function LiveLocation() {
 					longitude: lng,
 				};				
 				// Don't assign response if not using it
-				await axios.post("http://13.203.227.147/api/location", payload);
+				await axios.post("https://brainbrief.in/api/location", payload);
 				
 			} catch (error) {
 				console.error("Error sending location to server:", error);
@@ -211,7 +211,7 @@ function LiveLocation() {
 				},
 			};
 			
-			const response = await axios.post("http://13.203.227.147/api/token", payload);
+			const response = await axios.post("https://brainbrief.in/api/token", payload);
 
 			setToken(response.data.token);
 			setError(null);
@@ -251,7 +251,7 @@ function LiveLocation() {
 
 		try {
 			const response = await axios.get(
-				`http://13.203.227.147/api/location/${accessToken}`
+				`https://brainbrief.in/api/location/${accessToken}`
 			);
 			
 			if (!response.data || !response.data.latitude || !response.data.longitude) {
