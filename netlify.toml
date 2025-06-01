@@ -4,7 +4,7 @@
 
 [[redirects]]
 from = "/api/*"
-to = "http://13.203.227.147/api/:splat"
+to = "https://brainbrief.in/api/:splat"
 status = 200
 force = true
 headers = {
@@ -15,7 +15,7 @@ headers = {
 
 [[redirects]]
 from = "/ws"
-to = "ws://13.203.227.147"
+to = "wss://brainbrief.in"
 status = 200
 force = true
 
