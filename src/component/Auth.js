@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
 import "./Auth.css";
-import axios from "axios";
+import api from "../config";
 
 export default function Auth() {
 	const [username, setUserName] = useState("");
@@ -10,8 +10,6 @@ export default function Auth() {
 	const [password, setPassword] = useState("");
 	const [message, setMessage] = useState("");
 	const navigate = useNavigate();
-
-	const API_URL = "http://13.203.227.147/api";
 
 	// Email validation function
 	const isValidEmail = (email) => {
@@ -44,7 +42,7 @@ export default function Auth() {
 		// Sign up user here
 		if (isSignUp) {
 			try {
-				await axios.post(`${API_URL}/register`, {
+				await api.post("/register", {
 					username,
 					email,
 					password,
@@ -62,7 +60,7 @@ export default function Auth() {
 		} else {
 			// Sign in user
 			try {
-				const response = await axios.post(`${API_URL}/login`, {
+				const response = await api.post("/login", {
 					email,
 					password,
 				});
@@ -105,7 +103,7 @@ export default function Auth() {
 		<div className='auth'>
 			<img
 				className='login_logo'
-				src='http://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png'
+				src='https://png.pngtree.com/png-vector/20230413/ourmid/pngtree-3d-location-icon-clipart-in-transparent-background-vector-png-image_6704161.png'
 				alt='Location icon'
 			/>
 

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useParams, useNavigate } from "react-router-dom";
 import "./ForgetPassword.css";
-import axios from "axios";
+import api from "../config";
 
 export default function ResetPassword() {
 	const { token } = useParams(); // Extract token from URL params
@@ -10,9 +10,7 @@ export default function ResetPassword() {
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [retryCount, setRetryCount] = useState(0);
-	const API_URL = "http://13.203.227.147/api";
 	const navigate = useNavigate();
-
 
 	const passwordStrengthRegex =
 		/^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+={}|:";'<>?,./])[A-Za-z\d!@#$%^&*()_+={}|:";'<>?,./]{6,}$/;
@@ -42,20 +40,15 @@ export default function ResetPassword() {
 		}
 
 		try {
-			// Add request body debug info without showing actual password
-			const payload = { newPassword: password };
-			
-			const response = await axios.post(`${API_URL}/reset-password/${token}`, payload, {
-				headers: {
-					'Content-Type': 'application/json'
-				}
+			await api.post(`/reset-password/${token}`, {
+				password,
 			});
-			
-			setMessage(
-				response.data.message || "Password has been successfully reset!"
-			);
+
+			setMessage("Password reset successful! You can now sign in.");
 			setLoading(false);
-			setTimeout(() => navigate("/"), 2000);
+			setTimeout(() => {
+				navigate("/");
+			}, 2000);
 		} catch (error) {
 			console.error("Reset password error:", error);
 			setLoading(false);

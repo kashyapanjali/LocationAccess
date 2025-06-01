@@ -1,14 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import React, { useState } from "react";
-import axios from "axios";
 import "./Otp.css";
+import api from "../config";
 
 function Otp() {
 	const [email, setEmail] = useState("");
 	const [otp, setOtp] = useState("");
 	const [message, setMessage] = useState("");
 	const [loading, setLoading] = useState(false);
-	const API_URL = "http://13.203.227.147/api";
 	const navigate = useNavigate();
 
 	const isValidEmail = (email) => {
@@ -25,7 +24,7 @@ function Otp() {
 
 		setLoading(true);
 		try {
-			await axios.post(`${API_URL}/send-otp`, { email });
+			await api.post("/send-otp", { email });
 			setMessage("OTP sent to your email!");
 		} catch (error) {
 			setMessage("Error sending OTP. Please try again.");
@@ -38,38 +37,21 @@ function Otp() {
 		}
 	};
 
-	const handleVerifyOtp = async (e) => {
+	const handleSubmit = async (e) => {
 		e.preventDefault();
+
 		try {
-			const response = await axios.post(`${API_URL}/verify-otp`, {
-				email,
+			await api.post("/verify-otp", {
 				otp,
 			});
-			
-			// Generate a temporary userId if missing from response
-			let userId = response.data.userId;
-			
-			if (!userId) {
-				console.warn("No userId in OTP response - using email hash as temporary ID");
-				// Create a simple hash of the email to use as userId
-				userId = email.split('').reduce((acc, char) => {
-					return acc + char.charCodeAt(0);
-				}, 0);
-			}
-			
-			setMessage(response.data.message || "OTP verified successfully!");
 
-			// Save user ID in localStorage
-			localStorage.setItem("userId", userId);
-			localStorage.setItem("username", response.data.username || email.split('@')[0]);
-
-			navigate("/location");
+			setMessage("OTP verified successfully!");
+			setTimeout(() => {
+				navigate("/");
+			}, 2000);
 		} catch (error) {
-			setMessage("Error verifying OTP. Please try again.");
-			console.error(
-				"Verify OTP error:",
-				error.response ? error.response.data : error.message
-			);
+			setMessage("Invalid OTP. Please try again.");
+			console.error("OTP verification error:", error);
 		}
 	};
 
@@ -102,7 +84,7 @@ function Otp() {
 				</form>
 				<form
 					className='form'
-					onSubmit={handleVerifyOtp}>
+					onSubmit={handleSubmit}>
 					<h5>OTP</h5>
 					<input
 						type='text'
