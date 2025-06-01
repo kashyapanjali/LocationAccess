@@ -7,8 +7,7 @@ const api = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
-    },
-    withCredentials: true  // Enable sending cookies with requests
+    }
 });
 
 // Add request interceptor
@@ -43,6 +42,8 @@ api.interceptors.response.use(
                     throw new Error('Access denied. Please check your permissions.');
                 case 404:
                     throw new Error('Resource not found. Please check the URL.');
+                case 502:
+                    throw new Error('Unable to connect to the server. Please try again later.');
                 case 500:
                     throw new Error('Server error. Please try again later.');
                 default:
